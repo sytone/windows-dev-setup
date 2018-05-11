@@ -5,23 +5,23 @@ Disable-GameBarTips
 Enable-RemoteDesktop
 
 Update-ExecutionPolicy Unrestricted
-choco feature enable -n allowGlobalConfirmation
+
 
 ## Git
-cup git.install
-cup poshgit
-cup Git-Credential-Manager-for-Windows
+cup -y git.install
+cup -y poshgit
+cup -y Git-Credential-Manager-for-Windows
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
 
 
 
 ## Python
-cup python2
+cup -y python2
 if (Test-PendingReboot) { Invoke-Reboot }
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
 
 ## Node, npm
-cup nodejs.install
+cup -y nodejs.install
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
 
 ## NPM Update
@@ -29,7 +29,7 @@ npm install -g npm-windows-upgrade
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
 
 ## Yarn installation
-cup yarn
+cup -y yarn
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
 
 ## dot net
@@ -39,25 +39,25 @@ cup dotnetcore-sdk
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
 
 ## Editors
-cup visualstudiocode
-cup vscode-powershell
-cup vscode-gitlens
-cup vscode-gitattributes
-cup vscode-gitignore
-cup vscode-editorconfig
-cup vscode-csharp
+cup -y visualstudiocode
+cup -y vscode-powershell
+cup -y vscode-gitlens
+cup -y vscode-gitattributes
+cup -y vscode-gitignore
+cup -y vscode-editorconfig
+cup -y vscode-csharp
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
 
 ## Visual Studio 2017
-cup visualstudio2017community
-cup visualstudio2017-workload-netcoretools
-cup visualstudio2017-workload-vctools
+cup -y visualstudio2017community
+cup -y visualstudio2017-workload-netcoretools
+cup -y visualstudio2017-workload-vctools
 if (Test-PendingReboot) { Invoke-Reboot }
 
 ## Basics
-cup GoogleChrome
-cup 7zip.install
-cup sysinternals
+cup -y GoogleChrome
+cup -y 7zip.install
+cup -y sysinternals
 if (Test-PendingReboot) { Invoke-Reboot }
 
 # Pinning Things
