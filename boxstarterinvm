@@ -9,11 +9,10 @@ Update-ExecutionPolicy Unrestricted
 ## Git
 cinst -y git.install
 cinst -y poshgit
-
+cinst Git-Credential-Manager-for-Windows
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
 
-cinst Git-Credential-Manager-for-Windows
-cinst github
+
 
 ## Python
 cinst -y python2
@@ -23,8 +22,12 @@ $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";"
 ## Node, npm
 cinst -y nodejs.install
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+
+## NPM Update
 npm install -g npm-windows-upgrade
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+
+## Yarn installation
 cinst -y yarn
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
 
