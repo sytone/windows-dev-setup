@@ -7,7 +7,7 @@ Enable-RemoteDesktop
 Update-ExecutionPolicy Unrestricted
 
 ## Git
-cinst -y git --params="/WindowsTerminal /NoShellIntegration"
+cinst -y git.install
 cinst -y poshgit
 
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
