@@ -57,8 +57,8 @@ choco upgrade VisualStudio2013Professional -InstallArguments "/Features:'VC_MFC_
 
 ## Visual Studio 2015
 mkdir c:\installtmp
-(Invoke-WebRequest -UseBasicParsing -Uri https://raw.githubusercontent.com/sytone/windows-dev-setup/master/VS2015AdminDeployment.xml).Content | Set-Content -Encoding UTF8 -Path c:\installtmp\AdminDeployment.xml
-choco upgrade VisualStudio2015Enterprise -packageParameters "--AdminFile c:\installtmp\AdminDeployment.xml"
+#(Invoke-WebRequest -UseBasicParsing -Uri https://raw.githubusercontent.com/sytone/windows-dev-setup/master/VS2015AdminDeployment.xml).Content | Set-Content -Encoding UTF8 -Path c:\installtmp\AdminDeployment.xml
+choco upgrade VisualStudio2015Enterprise -packageParameters "--AdminFile https://raw.githubusercontent.com/sytone/windows-dev-setup/master/VS2015AdminDeployment.xml"
 
 ## Visual Studio 2017
 choco upgrade visualstudio2017enterprise
