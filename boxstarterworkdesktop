@@ -50,8 +50,13 @@ cinst -y vscode-editorconfig
 cinst -y vscode-csharp
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
 
+## Visual Studio 2013
+cinst VisualStudio2013Professional -InstallArguments "/Features:'VC_MFC_Libraries'"
+
+## Visual Studio 2015
+
 ## Visual Studio 2017
-choco -y install visualstudio2017enterprise
+choco install visualstudio2017enterprise
 choco install visualstudio2017-workload-azure
 choco install visualstudio2017-workload-manageddesktop
 choco install visualstudio2017-workload-nativedesktop
