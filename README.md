@@ -11,6 +11,7 @@ Manual install process
 
 ```PowerShell
 . { iwr -useb https://boxstarter.org/bootstrapper.ps1 } | iex; get-boxstarter -Force
+refreshenv
 Install-BoxstarterPackage -PackageName http://boxstarter.org/package/nr/url?https://raw.githubusercontent.com/sytone/windows-dev-set
 up/master/boxstarterworkdesktop
 ```
