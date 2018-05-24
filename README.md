@@ -9,8 +9,15 @@ START http://boxstarter.org/package/nr/url?https://raw.githubusercontent.com/syt
 
 Manual install process
 
+1.  Install box starter
+
 ```PowerShell
 . { iwr -useb https://boxstarter.org/bootstrapper.ps1 } | iex; get-boxstarter -Force
-refreshenv
-Install-BoxstarterPackage -PackageName https://raw.githubusercontent.com/sytone/windows-dev-setup/master/boxstarterworkdesktop -DisableReboots
+```
+
+2.  Open the boxstarter console and run the following. If it reboots, log back in and it will continue.
+
+```PowerShell
+$package = "https://raw.githubusercontent.com/sytone/windows-dev-setup/master/boxstarterworkdesktop"
+Install-BoxstarterPackage -PackageName $package
 ```
