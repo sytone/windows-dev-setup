@@ -1,13 +1,8 @@
-# windows-dev-setup
-scripts to quickly get a win 10 machine ready for development
+# Windows Development Machine Setup
 
+Scripts to quickly get a win 10 machine ready for development
 
-```PowerShell
-START http://boxstarter.org/package/nr/url?https://raw.githubusercontent.com/sytone/windows-dev-setup/master/boxstarterinvm
-```
-
-
-Manual install process
+## Manual install process
 
 1.  Install box starter
 
@@ -20,4 +15,10 @@ Manual install process
 ```PowerShell
 $package = "https://raw.githubusercontent.com/sytone/windows-dev-setup/master/boxstarterworkdesktop"
 Install-BoxstarterPackage -PackageName $package
+```
+## Web
+
+> Note: This does not work all the time in Windows 10.
+```PowerShell
+START http://boxstarter.org/package/nr/url?https://raw.githubusercontent.com/sytone/windows-dev-setup/master/boxstarterinvm
 ```
