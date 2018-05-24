@@ -43,39 +43,57 @@ choco upgrade dotnetcore-sdk
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
 
 ## Editors
-choco upgrade visualstudiocode
-choco upgrade vscode-powershell
-choco upgrade vscode-gitlens
-choco upgrade vscode-gitattributes
-choco upgrade vscode-gitignore
-choco upgrade vscode-editorconfig
-choco upgrade vscode-csharp
-$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+if(-not "visualstudiocode" -in ((choco list -localonly) | % {$_.Split(' ')[0]})) {
+    choco upgrade visualstudiocode
+    choco upgrade vscode-powershell
+    choco upgrade vscode-gitlens
+    choco upgrade vscode-gitattributes
+    choco upgrade vscode-gitignore
+    choco upgrade vscode-editorconfig
+    choco upgrade vscode-csharp
+    $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+} else {
+  Write-Host "Visual Studio Code already installed, skipping as may be already updated manually"
+}
 
 ## Visual Studio 2013
-choco upgrade VisualStudio2013Professional -InstallArguments "/Features:'VC_MFC_Libraries'"
+if(-not "VisualStudio2013Professional" -in ((choco list -localonly) | % {$_.Split(' ')[0]})) {
+    choco upgrade VisualStudio2013Professional -InstallArguments "/Features:'VC_MFC_Libraries'"
+} else {
+  Write-Host "Visual Studio 2013 already installed, skipping as may be already updated manually"
+}
 
 ## Visual Studio 2015
-mkdir c:\installtmp
-#(Invoke-WebRequest -UseBasicParsing -Uri https://raw.githubusercontent.com/sytone/windows-dev-setup/master/VS2015AdminDeployment.xml).Content | Set-Content -Encoding UTF8 -Path c:\installtmp\AdminDeployment.xml
-choco upgrade VisualStudio2015Enterprise
+if(-not "VisualStudio2015Enterprise" -in ((choco list -localonly) | % {$_.Split(' ')[0]})) {
+    mkdir c:\installtmp
+    choco upgrade VisualStudio2015Enterprise
+} else {
+  Write-Host "Visual Studio 2015 already installed, skipping as may be already updated manually"
+}
 
 ## Visual Studio 2017
-choco upgrade visualstudio2017enterprise
-choco upgrade visualstudio2017-workload-azure
-choco upgrade visualstudio2017-workload-manageddesktop
-choco upgrade visualstudio2017-workload-nativedesktop
-choco upgrade visualstudio2017-workload-netweb
-if (Test-PendingReboot) { Invoke-Reboot }
+if(-not "visualstudio2017enterprise" -in ((choco list -localonly) | % {$_.Split(' ')[0]})) {
+  choco upgrade visualstudio2017enterprise
+  choco upgrade visualstudio2017-workload-azure
+  choco upgrade visualstudio2017-workload-manageddesktop
+  choco upgrade visualstudio2017-workload-nativedesktop
+  choco upgrade visualstudio2017-workload-netweb
+  if (Test-PendingReboot) { Invoke-Reboot }
+} else {
+  Write-Host "Visual Studio 2017 already installed, skipping as may be already updated manually"
+}
 
 ## Basics
-choco upgrade GoogleChrome
+if(-not "GoogleChrome" -in ((choco list -localonly) | % {$_.Split(' ')[0]})) {
+    choco upgrade GoogleChrome
+} else {
+    Write-Host "Skipping Google Chrome as it self updates"
+}
+
 choco upgrade 7zip.install
 choco upgrade sysinternals
+choco upgrade conemu
+choco upgrade far
 if (Test-PendingReboot) { Invoke-Reboot }
 
-# Pinning Things
-Install-ChocolateyPinnedTaskBarItem "$env:programfiles\Google\Chrome\Application\chrome.exe"
-
-# Let's get Updates, too
 Install-WindowsUpdate -acceptEula
