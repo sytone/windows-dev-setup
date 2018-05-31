@@ -94,6 +94,7 @@ choco upgrade 7zip.install
 choco upgrade sysinternals
 choco upgrade conemu
 choco upgrade far
+choco upgrade docfx
 if (Test-PendingReboot) { Invoke-Reboot }
 
 Install-WindowsUpdate -acceptEula
