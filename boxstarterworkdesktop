@@ -42,8 +42,12 @@ choco upgrade dotnetcore-runtime
 choco upgrade dotnetcore-sdk
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
 
+$localInstallations = ((choco list -localonly) | % {$_.Split(' ')[0]})
+
 ## Editors
-if(-not "visualstudiocode" -in ((choco list -localonly) | % {$_.Split(' ')[0]})) {
+if("visualstudiocode" -in $localInstallations) {
+    Write-Host "Skipping Visual Studio upgrade"
+} else {
     choco upgrade visualstudiocode
     choco upgrade vscode-powershell
     choco upgrade vscode-gitlens
@@ -52,15 +56,13 @@ if(-not "visualstudiocode" -in ((choco list -localonly) | % {$_.Split(' ')[0]}))
     choco upgrade vscode-editorconfig
     choco upgrade vscode-csharp
     $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
-} else {
-  Write-Host "Visual Studio Code already installed, skipping as may be already updated manually"
 }
 
 ## Visual Studio 2013
-if(-not "VisualStudio2013Professional" -in ((choco list -localonly) | % {$_.Split(' ')[0]})) {
-    choco upgrade VisualStudio2013Professional -InstallArguments "/Features:'VC_MFC_Libraries'"
+if("VisualStudio2013Professional" -in $localInstallations) {
+    Write-Host "Visual Studio 2013 already installed, skipping as may be already updated manually"
 } else {
-  Write-Host "Visual Studio 2013 already installed, skipping as may be already updated manually"
+    choco upgrade VisualStudio2013Professional -InstallArguments "/Features:'VC_MFC_Libraries'"
 }
 
 ## Visual Studio 2015
