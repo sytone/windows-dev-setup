@@ -13,39 +13,39 @@ choco feature enable -n allowGlobalConfirmation
 choco upgrade git.install
 choco upgrade poshgit
 choco upgrade Git-Credential-Manager-for-Windows
-$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+$env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
 
 ## Python
 choco upgrade python2
 if (Test-PendingReboot) { Invoke-Reboot }
-$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+$env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
 
 choco upgrade python3
 if (Test-PendingReboot) { Invoke-Reboot }
-$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+$env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
 
 ## Node, npm
 choco upgrade nodejs.install
-$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+$env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
 
 ## NPM Update
 npm install -g npm-windows-upgrade
-$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+$env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
 
 ## Yarn installation
 choco upgrade yarn
-$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+$env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
 
 ## dot net
 choco upgrade dotnetcore
 choco upgrade dotnetcore-runtime
 choco upgrade dotnetcore-sdk
-$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+$env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
 
 $localInstallations = ((choco list -localonly) | % {$_.Split(' ')[0]})
 
 ## Editors
-if("visualstudiocode" -in $localInstallations) {
+if ("visualstudiocode" -in $localInstallations) {
     Write-Host "Skipping Visual Studio upgrade"
 } else {
     choco upgrade visualstudiocode
@@ -55,41 +55,41 @@ if("visualstudiocode" -in $localInstallations) {
     choco upgrade vscode-gitignore
     choco upgrade vscode-editorconfig
     choco upgrade vscode-csharp
-    $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+    $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
 }
 
 ## Visual Studio 2013
-if("VisualStudio2013Professional" -in $localInstallations) {
+if ("VisualStudio2013Professional" -in $localInstallations) {
     Write-Host "Visual Studio 2013 already installed, skipping as may be already updated manually"
 } else {
     choco upgrade VisualStudio2013Professional -InstallArguments "/Features:'VC_MFC_Libraries'"
 }
 
 ## Visual Studio 2015
-if(-not "VisualStudio2015Enterprise" -in ((choco list -localonly) | % {$_.Split(' ')[0]})) {
+if ("VisualStudio2013Professional" -in $localInstallations) {
+    Write-Host "Visual Studio 2015 already installed, skipping as may be already updated manually"
+} else {
     mkdir c:\installtmp
     choco upgrade VisualStudio2015Enterprise
-} else {
-  Write-Host "Visual Studio 2015 already installed, skipping as may be already updated manually"
 }
 
 ## Visual Studio 2017
-if(-not "visualstudio2017enterprise" -in ((choco list -localonly) | % {$_.Split(' ')[0]})) {
-  choco upgrade visualstudio2017enterprise
-  choco upgrade visualstudio2017-workload-azure
-  choco upgrade visualstudio2017-workload-manageddesktop
-  choco upgrade visualstudio2017-workload-nativedesktop
-  choco upgrade visualstudio2017-workload-netweb
-  if (Test-PendingReboot) { Invoke-Reboot }
+if ("visualstudio2017enterprise" -in $localInstallations) {
+    Write-Host "Visual Studio 2017 already installed, skipping as may be already updated manually"
 } else {
-  Write-Host "Visual Studio 2017 already installed, skipping as may be already updated manually"
+    choco upgrade visualstudio2017enterprise
+    choco upgrade visualstudio2017-workload-azure
+    choco upgrade visualstudio2017-workload-manageddesktop
+    choco upgrade visualstudio2017-workload-nativedesktop
+    choco upgrade visualstudio2017-workload-netweb
+    if (Test-PendingReboot) { Invoke-Reboot }
 }
 
 ## Basics
-if(-not "GoogleChrome" -in ((choco list -localonly) | % {$_.Split(' ')[0]})) {
-    choco upgrade GoogleChrome
-} else {
+if ("GoogleChrome" -in $localInstallations) {
     Write-Host "Skipping Google Chrome as it self updates"
+} else {
+    choco upgrade GoogleChrome
 }
 
 choco upgrade 7zip.install
