@@ -7,7 +7,7 @@ Scripts to quickly get a win 10 machine ready for development
 1.  Install box starter
 
 ```PowerShell
-. { iwr -useb https://boxstarter.org/bootstrapper.ps1 } | iex; get-boxstarter -Force
+Set-ExecutionPolicy -ExecutionPolicy Unrestricted; . { iwr -useb https://boxstarter.org/bootstrapper.ps1 } | iex; get-boxstarter -Force
 ```
 
 2.  Open the boxstarter console and run the following. If it reboots, log back in and it will continue.
