@@ -1,10 +1,15 @@
+# Allow powershell execution where needed. 
+Update-ExecutionPolicy Unrestricted
+
 # Configure Windows
 Set-WindowsExplorerOptions -EnableShowHiddenFilesFoldersDrives -EnableShowProtectedOSFiles -EnableShowFileExtensions -EnableShowFullPathInTitleBar
 Disable-GameBarTips
 Enable-RemoteDesktop
+Disable-InternetExplorerESC
 
-# Allow powershell execution where needed. 
-Update-ExecutionPolicy Unrestricted
+# Do any windows updates before installing. 
+Install-WindowsUpdate -acceptEula
+if (Test-PendingReboot) { Invoke-Reboot }
 
 # Enable Chocolatey Autoconfirm
 choco feature enable -n allowGlobalConfirmation
@@ -104,4 +109,4 @@ choco upgrade far
 choco upgrade docfx
 if (Test-PendingReboot) { Invoke-Reboot }
 
-Install-WindowsUpdate -acceptEula
+
