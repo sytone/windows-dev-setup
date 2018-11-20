@@ -7,10 +7,6 @@ Disable-GameBarTips
 Enable-RemoteDesktop
 Disable-InternetExplorerESC
 
-# Do any windows updates before installing. 
-Install-WindowsUpdate -acceptEula
-if (Test-PendingReboot) { Invoke-Reboot }
-
 # Enable Chocolatey Autoconfirm
 choco feature enable -n allowGlobalConfirmation
 
@@ -47,61 +43,46 @@ choco upgrade dotnetcore-runtime
 choco upgrade dotnetcore-sdk
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
 
-$localInstallations = ((choco list -localonly) | % {$_.Split(' ')[0]})
-
 ## Editors
-if ("visualstudiocode" -in $localInstallations) {
-    Write-Host "Skipping Visual Studio upgrade"
-} else {
-    choco upgrade visualstudiocode
-    choco upgrade vscode-powershell
-    choco upgrade vscode-gitlens
-    choco upgrade vscode-gitattributes
-    choco upgrade vscode-gitignore
-    choco upgrade vscode-editorconfig
-    choco upgrade vscode-csharp
-    $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
-}
+choco upgrade visualstudiocode
+$env:Path = "C:\Program Files\Microsoft VS Code\bin;" + [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+code --force --install-extension codezombiech.gitignore
+code --force --install-extension DavidAnson.vscode-markdownlint
+code --force --install-extension eamodio.gitlens
+code --force --install-extension EditorConfig.EditorConfig
+code --force --install-extension hashhar.gitattributes
+code --force --install-extension HookyQR.beautify
+code --force --install-extension ms-vscode.csharp
+code --force --install-extension ms-vscode.PowerShell
+code --force --install-extension ms-vsts.team
+code --force --install-extension PeterJausovec.vscode-docker
+code --force --install-extension redhat.vscode-yaml
+code --force --install-extension robertohuertasm.vscode-icons
+code --force --install-extension shd101wyy.markdown-preview-enhanced
+code --force --install-extension zhuangtongfa.Material-theme
 
 ## Visual Studio 2013
 if($env:INSTALLVS2013) { 
   Write-Host "Installing VS 2013" 
-  if ("VisualStudio2013Professional" -in $localInstallations) {
-      Write-Host "Visual Studio 2013 already installed, skipping as may be already updated manually"
-  } else {
-      choco upgrade VisualStudio2013Professional -InstallArguments "/Features:'VC_MFC_Libraries'"
-  }
+  choco upgrade VisualStudio2013Professional -InstallArguments "/Features:'VC_MFC_Libraries'"
 } else { "Skipping VS 2013" }
 
 ## Visual Studio 2015
 if($env:INSTALLVS2015) {
-  if ("VisualStudio2013Professional" -in $localInstallations) {
-    Write-Host "Visual Studio 2015 already installed, skipping as may be already updated manually"
-  } else {
-    mkdir c:\installtmp
-    choco upgrade VisualStudio2015Enterprise
-  }
+  mkdir c:\installtmp
+  choco upgrade VisualStudio2015Enterprise
 } else { "Skipping VS 2015" }
 
 ## Visual Studio 2017
-if ("visualstudio2017enterprise" -in $localInstallations) {
-    Write-Host "Visual Studio 2017 already installed, skipping as may be already updated manually"
-} else {
-    choco upgrade visualstudio2017enterprise
-    choco upgrade visualstudio2017-workload-azure
-    choco upgrade visualstudio2017-workload-manageddesktop
-    choco upgrade visualstudio2017-workload-nativedesktop
-    choco upgrade visualstudio2017-workload-netweb
-    if (Test-PendingReboot) { Invoke-Reboot }
-}
+choco upgrade visualstudio2017enterprise
+choco upgrade visualstudio2017-workload-azure
+choco upgrade visualstudio2017-workload-manageddesktop
+choco upgrade visualstudio2017-workload-nativedesktop
+choco upgrade visualstudio2017-workload-netweb
+if (Test-PendingReboot) { Invoke-Reboot }
 
 ## Basics
-if ("GoogleChrome" -in $localInstallations) {
-    Write-Host "Skipping Google Chrome as it self updates"
-} else {
-    choco upgrade GoogleChrome
-}
-
+choco upgrade GoogleChrome
 choco upgrade 7zip.install
 choco upgrade sysinternals
 choco upgrade conemu
@@ -109,4 +90,7 @@ choco upgrade far
 choco upgrade docfx
 if (Test-PendingReboot) { Invoke-Reboot }
 
+# Do any windows updates before completing. 
+Install-WindowsUpdate -acceptEula
+if (Test-PendingReboot) { Invoke-Reboot }
 
