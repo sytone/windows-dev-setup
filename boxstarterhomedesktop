@@ -1,0 +1,59 @@
+# Allow powershell execution where needed. 
+Update-ExecutionPolicy Unrestricted
+
+# Configure Windows
+Set-WindowsExplorerOptions -EnableShowHiddenFilesFoldersDrives -EnableShowProtectedOSFiles -EnableShowFileExtensions -EnableShowFullPathInTitleBar
+Enable-RemoteDesktop
+Disable-InternetExplorerESC
+
+# Enable Chocolatey Autoconfirm
+choco feature enable -n allowGlobalConfirmation
+
+## Git
+choco upgrade git.install
+choco upgrade poshgit
+choco upgrade Git-Credential-Manager-for-Windows
+$env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+
+## Python
+choco upgrade python3
+if (Test-PendingReboot) { Invoke-Reboot }
+$env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+
+## Node, npm
+choco upgrade nodejs.install
+$env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+
+## NPM Update
+npm install -g npm-windows-upgrade
+$env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+
+## Yarn installation
+choco upgrade yarn
+$env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+
+## dot net
+choco upgrade dotnetcore
+choco upgrade dotnetcore-runtime
+choco upgrade dotnetcore-sdk
+$env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+
+## Editors
+choco upgrade visualstudiocode
+$env:Path = "C:\Program Files\Microsoft VS Code\bin;" + [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+code --force --install-extension codezombiech.gitignore
+code --force --install-extension EditorConfig.EditorConfig
+code --force --install-extension hashhar.gitattributes
+code --force --install-extension ms-vscode.csharp
+code --force --install-extension ms-vscode.PowerShell
+code --force --install-extension redhat.vscode-yaml
+code --force --install-extension robertohuertasm.vscode-icons
+code --force --install-extension zhuangtongfa.Material-theme
+
+## Basics
+choco upgrade 7zip.install
+choco upgrade sysinternals
+
+# Do any windows updates before completing. 
+Install-WindowsUpdate -acceptEula
+if (Test-PendingReboot) { Invoke-Reboot }
