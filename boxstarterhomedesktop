@@ -54,6 +54,23 @@ code --force --install-extension zhuangtongfa.Material-theme
 choco upgrade 7zip.install
 choco upgrade sysinternals
 
+## PSF
+iex ((new-object net.webclient).DownloadString(('https://raw.github.com/sytone/PowerShellFrame/master/install.ps1?x={0}' -f (Get-Random))))
+
+# Screen Setup
+Add-ItemToTaskBar -TargetFilePath "C:\Program Files\Microsoft VS Code\Code.exe"
+
+mkdir "$($env:userprofile)\fontinstall"
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+Invoke-WebRequest -UseBasicParsing -Uri "https://github.com/adobe-fonts/source-code-pro/releases/download/variable-fonts/SourceCodeVariable-Italic.ttf" -OutFile "$($env:userprofile)\fontinstall\SourceCodeVariable-Italic.ttf" -UseDefaultCredentials
+Invoke-WebRequest -UseBasicParsing -Uri "https://github.com/adobe-fonts/source-code-pro/releases/download/variable-fonts/SourceCodeVariable-Roman.ttf" -OutFile "$($env:userprofile)\fontinstall\SourceCodeVariable-Roman.ttf" -UseDefaultCredentials
+$FONTS = 0x14
+$objShell = New-Object -ComObject Shell.Application
+$objFolder = $objShell.Namespace($FONTS)
+$objFolder.CopyHere("$($env:userprofile)\fontinstall\SourceCodeVariable-Roman.ttf")
+$objFolder.CopyHere("$($env:userprofile)\fontinstall\SourceCodeVariable-Italic.ttf")
+remove-item "$($env:userprofile)\fontinstall" -Force -Recurse
+
 # Do any windows updates before completing. 
 Install-WindowsUpdate -acceptEula
 if (Test-PendingReboot) { Invoke-Reboot }
