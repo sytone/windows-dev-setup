@@ -9,6 +9,13 @@ Disable-InternetExplorerESC
 # Enable Chocolatey Autoconfirm
 choco feature enable -n allowGlobalConfirmation
 
+# Install powershell core
+$latestPowerShellCore = (Invoke-WebRequest -UseBasicParsing -Uri https://api.github.com/repos/PowerShell/PowerShell/releases/latest).Content | ConvertFrom-Json
+$downloadUrl = ($latestPowerShellCore.assets | ? {$_.name.Contains("win-x64.msi")}).browser_download_url
+$downloadName = ($latestPowerShellCore.assets | ? {$_.name.Contains("win-x64.msi")}).name
+Invoke-WebRequest -UseBasicParsing -Uri $downloadUrl -OutFile "./$downloadName"
+msiexec /i $downloadName /qb ADD_EXPLORER_CONTEXT_MENU_OPENPOWERSHELL=1 ENABLE_PSREMOTING=1 REGISTER_MANIFEST=1
+
 ## Git
 choco upgrade git.install
 choco upgrade poshgit
