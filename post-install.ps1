@@ -13,10 +13,12 @@ function Install-Font($url, $name, $family) {
   
 Set-ExecutionPolicy -ExecutionPolicy Unrestricted
 
-if((Test-Path "c:/tools/")) {
+$toolsPath = "c:\tools\"
+
+if((Test-Path $toolsPath)) {
     Write-Host "Tools folder already exists"
 } else {
-    New-Item -Path "C:\tools\" -ItemType Directory -Force | Out-Null
+    New-Item -Path $toolsPath -ItemType Directory -Force | Out-Null
 }
 
 $installed = Get-ChildItem "HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall" | foreach-object { $_.GetValue("DisplayName") }
@@ -42,12 +44,18 @@ Invoke-WebRequest -UseBasicParsing -Uri ((((Invoke-WebRequest -UseBasicParsing -
 Expand-Archive -Path "$($env:tmp)/azshell_windows_64-bit.zip" -DestinationPath "$($env:tmp)/azshell_windows_64-bit" -Force
 Copy-Item -Path "$($env:tmp)/azshell_windows_64-bit/azshell.exe" -Destination "c:/tools/azshell.exe" -Force
 
-# Run in pwsh and powershell
-# iex ((new-object net.webclient).DownloadString(('https://raw.github.com/sytone/PowerShellFrame/master/install.ps1?x={0}' -f (Get-Random))))
+if(Test-Path "$env:USERPROFILE\psf") {
+    Write-Host "PSF Installed" 
+} else {
+    # Run in pwsh and powershell
+    iex ((new-object net.webclient).DownloadString(('https://raw.github.com/sytone/PowerShellFrame/master/install.ps1?x={0}' -f (Get-Random))))
+    . "$env:USERPROFILE\psf\localenv.ps1"
+}
 
+Add-DirectoryToPath -Directory $toolsPath
 
 $ScriptsRoot = (Join-Path $env:USERPROFILE "Scripts")
-if(((Test-Path $ScriptsRoot))) {
+if(((Test-Path $ScriptsRoot) -and ($env:OneDriveConsumer))) {
   if((get-item -Path "$ScriptsRoot\AHK").LinkType -eq "SymbolicLink" -or (get-item -Path "$ScriptsRoot\powershell").LinkType -eq "SymbolicLink") {
     Write-Host "Already Linked, skipping Symbolic Link creation to Onedrive for Consumer"
   } else {
