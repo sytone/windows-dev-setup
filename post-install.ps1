@@ -22,6 +22,8 @@ function Install-Font($url, $name, $family) {
 Set-ExecutionPolicy -ExecutionPolicy Unrestricted
 
 $toolsPath = "c:\tools\"
+$version = "1.0.1"
+
 
 if((Test-Path $toolsPath)) {
     Write-Host "Tools folder already exists"
