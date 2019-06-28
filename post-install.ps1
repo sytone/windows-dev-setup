@@ -14,7 +14,7 @@ function Install-Font($url, $name, $family) {
         $FONTS = 0x14
         $objShell = New-Object -ComObject Shell.Application
         $objFolder = $objShell.Namespace($FONTS)
-        $objFolder.CopyHere("$($env:userprofile)\fontinstall\$name")
+        $objFolder.CopyHere("$($env:userprofile)\fontinstall\$name",0x10)
         remove-item "$($env:userprofile)\fontinstall" -Force -Recurse
     }
 }
