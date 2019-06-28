@@ -22,7 +22,7 @@ function Install-Font($url, $name, $family) {
 Set-ExecutionPolicy -ExecutionPolicy Unrestricted
 
 $toolsPath = "c:\tools\"
-$version = "1.0.9"
+$version = "1.0.10"
 
 if((Test-Path "$toolsPath\$version.log")) {
     Write-Host "Current version ($version) already run, polling for update."
@@ -63,9 +63,9 @@ if(Test-Path "C:\Program Files (x86)\Microsoft\Edge Dev\Application") {
 if(Test-Path "C:\Program Files\Microsoft VS Code") {
     Write-Host "Visual Studio Code already installed"
 } else {
-    Invoke-WebRequest -UseBasicParsing -Uri "https://update.code.visualstudio.com/latest/win32-x64-user/stable" -OutFile "./VSCodeUserSetup-x64.exe"
-    Start-Process -FilePath ./VSCodeUserSetup-x64.exe -Wait
-    Remove-Item "./VSCodeUserSetup-x64.exe" -Force -Recurse
+    Invoke-WebRequest -UseBasicParsing -Uri "https://update.code.visualstudio.com/latest/win32-x64/stable" -OutFile "./VSCodeSetup-x64.exe"
+    Start-Process -FilePath ./VSCodeSetup-x64.exe -Wait
+    Remove-Item "./VSCodeSetup-x64.exe" -Force -Recurse
 }
 
 Install-Font "https://github.com/adobe-fonts/source-code-pro/releases/download/variable-fonts/SourceCodeVariable-Italic.ttf" "SourceCodeVariable-Italic.ttf" "Source Code Variable"
@@ -76,9 +76,13 @@ Install-Font "https://github.com/tonsky/FiraCode/blob/master/distr/ttf/FiraCode-
 Install-Font "https://github.com/tonsky/FiraCode/blob/master/distr/ttf/FiraCode-Regular.ttf?raw=true" "FiraCode-Regular.ttf" "Fira Code"
 Install-Font "https://github.com/tonsky/FiraCode/blob/master/distr/ttf/FiraCode-Retina.ttf?raw=true" "FiraCode-Retina.ttf" "Fira Code"
     
-Invoke-WebRequest -UseBasicParsing -Uri ((((Invoke-WebRequest -UseBasicParsing -Uri https://api.github.com/repos/yangl900/azshell/releases/latest).Content | ConvertFrom-Json).assets | ? {$_.name.Contains("windows")}).browser_download_url) -OutFile "$($env:tmp)/azshell_windows_64-bit.zip"
-Expand-Archive -Path "$($env:tmp)/azshell_windows_64-bit.zip" -DestinationPath "$($env:tmp)/azshell_windows_64-bit" -Force
-Copy-Item -Path "$($env:tmp)/azshell_windows_64-bit/azshell.exe" -Destination "c:/tools/azshell.exe" -Force
+if(Test-Path "c:/tools/azshell.exe") {
+    Write-Host "azshell Installed" 
+} else {
+    Invoke-WebRequest -UseBasicParsing -Uri ((((Invoke-WebRequest -UseBasicParsing -Uri https://api.github.com/repos/yangl900/azshell/releases/latest).Content | ConvertFrom-Json).assets | ? {$_.name.Contains("windows")}).browser_download_url) -OutFile "$($env:tmp)/azshell_windows_64-bit.zip"
+    Expand-Archive -Path "$($env:tmp)/azshell_windows_64-bit.zip" -DestinationPath "$($env:tmp)/azshell_windows_64-bit" -Force
+    Copy-Item -Path "$($env:tmp)/azshell_windows_64-bit/azshell.exe" -Destination "c:/tools/azshell.exe" -Force
+}
 
 if(Test-Path "$env:USERPROFILE\psf") {
     Write-Host "PSF Installed" 
