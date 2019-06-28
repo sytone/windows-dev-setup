@@ -3,9 +3,10 @@ iex ((new-object net.webclient).DownloadString(('https://raw.githubusercontent.c
 #>
 
 function Install-Font($url, $name, $family) {
-    if (Test-Path "c:\windows\fonts\$($name)") {
+    if (Test-Path "c:\windows\fonts\$name") {
         Write-Host "Font already installed"
     } else {
+        Write-Host "c:\windows\fonts\$name is not found"
         Write-Host "Installing font $name from $url"
         New-Item "$($env:userprofile)\fontinstall" -ItemType Directory -Force | Out-Null
         [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
