@@ -22,7 +22,14 @@ function Install-Font($url, $name, $family) {
 Set-ExecutionPolicy -ExecutionPolicy Unrestricted
 
 $toolsPath = "c:\tools\"
-$version = "1.0.3"
+$version = "1.0.4"
+
+if((Test-Path "$toolsPath\$version.log")) {
+    Write-Host "Current version ($version) already run, polling for update."
+    Start-Sleep -Seconds 10 
+    iex ((Invoke-WebRequest -UseBasicParsing -Uri ('https://raw.githubusercontent.com/sytone/windows-dev-setup/master/post-install.ps1?x={0}' -f (Get-Random)) -Headers @{"Pragma"="no-cache";"Cache-Control"="no-cache";}).Content)
+    return
+}
 
 Write-Host "Version: $version"
 Read-Host "Press enter when ready to start"
@@ -32,6 +39,8 @@ if((Test-Path $toolsPath)) {
 } else {
     New-Item -Path $toolsPath -ItemType Directory -Force | Out-Null
 }
+
+New-Item -Path "$toolsPath\$version.log" -Force | Out-Null
 
 $installed = Get-ChildItem "HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall" | foreach-object { $_.GetValue("DisplayName") }
 if($installed.Contains("PowerShell 6-x64")) {
