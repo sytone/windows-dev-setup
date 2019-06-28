@@ -22,7 +22,7 @@ function Install-Font($url, $name, $family) {
 Set-ExecutionPolicy -ExecutionPolicy Unrestricted
 
 $toolsPath = "c:\tools\"
-$version = "1.0.10"
+$version = "1.0.12"
 
 if((Test-Path "$toolsPath\$version.log")) {
     Write-Host "Current version ($version) already run, polling for update."
@@ -63,9 +63,19 @@ if(Test-Path "C:\Program Files (x86)\Microsoft\Edge Dev\Application") {
 if(Test-Path "C:\Program Files\Microsoft VS Code") {
     Write-Host "Visual Studio Code already installed"
 } else {
+    $vscodeInf = @"
+[Setup]
+Lang=english
+Dir=C:\Program Files\Microsoft VS Code
+Group=Visual Studio Code
+NoIcons=0
+Tasks=addcontextmenufiles,addcontextmenufolders,associatewithfiles,addtopath
+"@
+    $vscodeInf | Set-Content "./vsinstall.inf"
     Invoke-WebRequest -UseBasicParsing -Uri "https://update.code.visualstudio.com/latest/win32-x64/stable" -OutFile "./VSCodeSetup-x64.exe"
-    Start-Process -FilePath ./VSCodeSetup-x64.exe -Wait
+    Start-Process -FilePath ./VSCodeSetup-x64.exe -ArgumentList @('/SP-','/VERYSILENT','/SUPPRESSMSGBOXES','/FORCECLOSEAPPLICATIONS','/LOADINF="./vsinstall.inf"') -Wait
     Remove-Item "./VSCodeSetup-x64.exe" -Force -Recurse
+    Remove-Item "./vsinstall.inf" -Force -Recurse
 }
 
 Install-Font "https://github.com/adobe-fonts/source-code-pro/releases/download/variable-fonts/SourceCodeVariable-Italic.ttf" "SourceCodeVariable-Italic.ttf" "Source Code Variable"
