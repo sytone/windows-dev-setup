@@ -22,7 +22,7 @@ function Install-Font($url, $name, $family) {
 Set-ExecutionPolicy -ExecutionPolicy Unrestricted
 
 $toolsPath = "c:\tools\"
-$version = "1.0.12"
+$version = "1.0.13"
 
 if((Test-Path "$toolsPath\$version.log")) {
     Write-Host "Current version ($version) already run, polling for update."
@@ -76,6 +76,40 @@ Tasks=addcontextmenufiles,addcontextmenufolders,associatewithfiles,addtopath
     Start-Process -FilePath ./VSCodeSetup-x64.exe -ArgumentList @('/SP-','/VERYSILENT','/SUPPRESSMSGBOXES','/FORCECLOSEAPPLICATIONS','/LOADINF="./vsinstall.inf"') -Wait
     Remove-Item "./VSCodeSetup-x64.exe" -Force -Recurse
     Remove-Item "./vsinstall.inf" -Force -Recurse
+}
+
+if(Test-Path "C:\Program Files\Git") {
+    Write-Host "GIT already installed"
+} else {
+    $gitInf = @"
+[Setup]
+Lang=default
+Dir=C:\Program Files\Git
+Group=Git
+NoIcons=0
+SetupType=default
+Components=ext,ext\shellhere,ext\guihere,gitlfs,assoc,assoc_sh
+Tasks=
+EditorOption=VisualStudioCode
+CustomEditorPath=
+PathOption=Cmd
+SSHOption=OpenSSH
+CURLOption=OpenSSL
+CRLFOption=CRLFAlways
+BashTerminalOption=MinTTY
+PerformanceTweaksFSCache=Enabled
+UseCredentialManager=Enabled
+EnableSymlinks=Disabled
+EnableBuiltinInteractiveAdd=Disabled
+"@
+    $gitInf | Set-Content "./gitinstall.inf"
+    $latestGit = (Invoke-WebRequest -UseBasicParsing -Uri https://api.github.com/repos/git-for-windows/git/releases/latest).Content | ConvertFrom-Json
+    $downloadUrl = ($latestGit.assets | ? {$_.name.Contains("64-bit.exe")}).browser_download_url
+    $downloadName = ($latestGit.assets | ? {$_.name.Contains("64-bit.exe")}).name
+    Invoke-WebRequest -UseBasicParsing -Uri $downloadUrl -OutFile "./$downloadName"
+    Start-Process -FilePath "./$downloadName" -ArgumentList @('/SP-','/VERYSILENT','/SUPPRESSMSGBOXES','/FORCECLOSEAPPLICATIONS','/LOADINF="./gitinstall.inf"') -Wait
+    Remove-Item "./$downloadName" -Force -Recurse
+    Remove-Item "./gitinstall.inf" -Force -Recurse
 }
 
 Install-Font "https://github.com/adobe-fonts/source-code-pro/releases/download/variable-fonts/SourceCodeVariable-Italic.ttf" "SourceCodeVariable-Italic.ttf" "Source Code Variable"
