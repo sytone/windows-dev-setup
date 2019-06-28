@@ -7,40 +7,41 @@ function Install-Font($url, $name, $family) {
     $FONTS = 0x14
     $objShell = New-Object -ComObject Shell.Application
     $objFolder = $objShell.Namespace($FONTS)
-    if(($objFolder.Items() | ? {$_.Path.Contains("Fira")})) { 
-      Write-Host "Family Installed Already"
-    } else {
-      $objFolder.CopyHere("$($env:userprofile)\fontinstall\$name")
-    }
+    $objFolder.CopyHere("$($env:userprofile)\fontinstall\$name")
     remove-item "$($env:userprofile)\fontinstall" -Force -Recurse
-  }
+}
   
-  Set-ExecutionPolicy -ExecutionPolicy Unrestricted
-  
-  if((Test-Path "c:/tools/")) {
+Set-ExecutionPolicy -ExecutionPolicy Unrestricted
+
+if((Test-Path "c:/tools/")) {
     Write-Host "Tools folder already exists"
-  } else {
-    New-Item "c:/tools/" -Force | Out-Null
-  }
+} else {
+    New-Item -Path "C:\tools\" -ItemType Directory -Force | Out-Null
+}
+
+$installed = Get-ChildItem "HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall" | foreach-object { $_.GetValue("DisplayName") }
+if($installed.Contains("PowerShell 6-x64")) {
+    Write-Host "PowerShell 6 already installed"
+} else {
+    $latestPowerShellCore = (Invoke-WebRequest -UseBasicParsing -Uri https://api.github.com/repos/PowerShell/PowerShell/releases/latest).Content | ConvertFrom-Json
+    $downloadUrl = ($latestPowerShellCore.assets | ? {$_.name.Contains("win-x64.msi")}).browser_download_url
+    $downloadName = ($latestPowerShellCore.assets | ? {$_.name.Contains("win-x64.msi")}).name
+    Invoke-WebRequest -UseBasicParsing -Uri $downloadUrl -OutFile "./$downloadName"
+    msiexec /i $downloadName /qb ADD_EXPLORER_CONTEXT_MENU_OPENPOWERSHELL=1 ENABLE_PSREMOTING=1 REGISTER_MANIFEST=1
+}
   
-  $latestPowerShellCore = (Invoke-WebRequest -UseBasicParsing -Uri https://api.github.com/repos/PowerShell/PowerShell/releases/latest).Content | ConvertFrom-Json
-  $downloadUrl = ($latestPowerShellCore.assets | ? {$_.name.Contains("win-x64.msi")}).browser_download_url
-  $downloadName = ($latestPowerShellCore.assets | ? {$_.name.Contains("win-x64.msi")}).name
-  Invoke-WebRequest -UseBasicParsing -Uri $downloadUrl -OutFile "./$downloadName"
-  msiexec /i $downloadName /qb ADD_EXPLORER_CONTEXT_MENU_OPENPOWERSHELL=1 ENABLE_PSREMOTING=1 REGISTER_MANIFEST=1
-  
-  Install-Font "https://github.com/adobe-fonts/source-code-pro/releases/download/variable-fonts/SourceCodeVariable-Italic.ttf" "SourceCodeVariable-Italic.ttf" "Source Code Variable"
-  Install-Font "https://github.com/adobe-fonts/source-code-pro/releases/download/variable-fonts/SourceCodeVariable-Roman.ttf" "SourceCodeVariable-Roman.ttf" "Source Code Variable"
-  Install-Font "https://github.com/tonsky/FiraCode/blob/master/distr/ttf/FiraCode-Bold.ttf?raw=true" "FiraCode-Bold.ttf" "Fira Code"
-  Install-Font "https://github.com/tonsky/FiraCode/blob/master/distr/ttf/FiraCode-Light.ttf?raw=true" "FiraCode-Light.ttf" "Fira Code"
-  Install-Font "https://github.com/tonsky/FiraCode/blob/master/distr/ttf/FiraCode-Medium.ttf?raw=true" "FiraCode-Medium.ttf" "Fira Code"
-  Install-Font "https://github.com/tonsky/FiraCode/blob/master/distr/ttf/FiraCode-Regular.ttf?raw=true" "FiraCode-Regular.ttf" "Fira Code"
-  Install-Font "https://github.com/tonsky/FiraCode/blob/master/distr/ttf/FiraCode-Retina.ttf?raw=true" "FiraCode-Retina.ttf" "Fira Code"
+Install-Font "https://github.com/adobe-fonts/source-code-pro/releases/download/variable-fonts/SourceCodeVariable-Italic.ttf" "SourceCodeVariable-Italic.ttf" "Source Code Variable"
+Install-Font "https://github.com/adobe-fonts/source-code-pro/releases/download/variable-fonts/SourceCodeVariable-Roman.ttf" "SourceCodeVariable-Roman.ttf" "Source Code Variable"
+Install-Font "https://github.com/tonsky/FiraCode/blob/master/distr/ttf/FiraCode-Bold.ttf?raw=true" "FiraCode-Bold.ttf" "Fira Code"
+Install-Font "https://github.com/tonsky/FiraCode/blob/master/distr/ttf/FiraCode-Light.ttf?raw=true" "FiraCode-Light.ttf" "Fira Code"
+Install-Font "https://github.com/tonsky/FiraCode/blob/master/distr/ttf/FiraCode-Medium.ttf?raw=true" "FiraCode-Medium.ttf" "Fira Code"
+Install-Font "https://github.com/tonsky/FiraCode/blob/master/distr/ttf/FiraCode-Regular.ttf?raw=true" "FiraCode-Regular.ttf" "Fira Code"
+Install-Font "https://github.com/tonsky/FiraCode/blob/master/distr/ttf/FiraCode-Retina.ttf?raw=true" "FiraCode-Retina.ttf" "Fira Code"
     
-  Invoke-WebRequest -UseBasicParsing -Uri ((((Invoke-WebRequest -UseBasicParsing -Uri https://api.github.com/repos/yangl900/azshell/releases/latest).Content | ConvertFrom-Json).assets | ? {$_.name.Contains("windows")}).browser_download_url) -OutFile "$($env:tmp)/azshell_windows_64-bit.zip"
-  Expand-Archive -Path "$($env:tmp)/azshell_windows_64-bit.zip" -DestinationPath "$($env:tmp)/azshell_windows_64-bit" -Force
-  Copy-Item -Path "$($env:tmp)/azshell_windows_64-bit/azshell.exe" -Destination "c:/tools/azshell.exe" -Force
-  
+Invoke-WebRequest -UseBasicParsing -Uri ((((Invoke-WebRequest -UseBasicParsing -Uri https://api.github.com/repos/yangl900/azshell/releases/latest).Content | ConvertFrom-Json).assets | ? {$_.name.Contains("windows")}).browser_download_url) -OutFile "$($env:tmp)/azshell_windows_64-bit.zip"
+Expand-Archive -Path "$($env:tmp)/azshell_windows_64-bit.zip" -DestinationPath "$($env:tmp)/azshell_windows_64-bit" -Force
+Copy-Item -Path "$($env:tmp)/azshell_windows_64-bit/azshell.exe" -Destination "c:/tools/azshell.exe" -Force
+
 # Run in pwsh and powershell
 # iex ((new-object net.webclient).DownloadString(('https://raw.github.com/sytone/PowerShellFrame/master/install.ps1?x={0}' -f (Get-Random))))
 
