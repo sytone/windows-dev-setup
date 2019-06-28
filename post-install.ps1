@@ -3,7 +3,7 @@ iex ((Invoke-WebRequest -UseBasicParsing -Uri ('https://raw.githubusercontent.co
 #>
 
 function Install-Font($url, $name, $family) {
-    if ((Test-Path "c:\windows\fonts\$name") -or (Test-Path "C:\Users\$($env:userprofile)\AppData\Local\Microsoft\Windows\Fonts\$name")) {
+    if ((Test-Path "c:\windows\fonts\$name") -or (Test-Path "$($env:userprofile)\AppData\Local\Microsoft\Windows\Fonts\$name")) {
         Write-Host "Font already installed"
     } else {
         Write-Host "c:\windows\fonts\$name is not found"
@@ -22,7 +22,7 @@ function Install-Font($url, $name, $family) {
 Set-ExecutionPolicy -ExecutionPolicy Unrestricted
 
 $toolsPath = "c:\tools\"
-$version = "1.0.5"
+$version = "1.0.6"
 
 if((Test-Path "$toolsPath\$version.log")) {
     Write-Host "Current version ($version) already run, polling for update."
@@ -32,7 +32,6 @@ if((Test-Path "$toolsPath\$version.log")) {
 }
 
 Write-Host "Version: $version"
-Read-Host "Press enter when ready to start"
 
 if((Test-Path $toolsPath)) {
     Write-Host "Tools folder already exists"
