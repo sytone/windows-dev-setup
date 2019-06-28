@@ -22,7 +22,7 @@ function Install-Font($url, $name, $family) {
 Set-ExecutionPolicy -ExecutionPolicy Unrestricted
 
 $toolsPath = "c:\tools\"
-$version = "1.0.8"
+$version = "1.0.9"
 
 if((Test-Path "$toolsPath\$version.log")) {
     Write-Host "Current version ($version) already run, polling for update."
@@ -58,6 +58,14 @@ if(Test-Path "C:\Program Files (x86)\Microsoft\Edge Dev\Application") {
     Invoke-WebRequest -UseBasicParsing -Uri "https://c2rsetup.officeapps.live.com/c2r/downloadEdge.aspx?ProductreleaseID=Edge&platform=Default&version=Edge&Channel=Dev&language=en-us&Consent=1" -OutFile "./MicrosoftEdgeSetup.exe"
     Start-Process -FilePath ./MicrosoftEdgeSetup.exe -Wait
     Remove-Item "./MicrosoftEdgeSetup.exe" -Force -Recurse
+}
+
+if(Test-Path "C:\Program Files\Microsoft VS Code") {
+    Write-Host "Visual Studio Code already installed"
+} else {
+    Invoke-WebRequest -UseBasicParsing -Uri "https://update.code.visualstudio.com/latest/win32-x64-user/stable" -OutFile "./VSCodeUserSetup-x64.exe"
+    Start-Process -FilePath ./VSCodeUserSetup-x64.exe -Wait
+    Remove-Item "./VSCodeUserSetup-x64.exe" -Force -Recurse
 }
 
 Install-Font "https://github.com/adobe-fonts/source-code-pro/releases/download/variable-fonts/SourceCodeVariable-Italic.ttf" "SourceCodeVariable-Italic.ttf" "Source Code Variable"
