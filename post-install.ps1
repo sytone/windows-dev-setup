@@ -1,5 +1,5 @@
 <#
-iex ((new-object net.webclient).DownloadString(('https://raw.githubusercontent.com/sytone/windows-dev-setup/master/post-install.ps1?x={0}' -f (Get-Random))))
+iex ((Invoke-WebRequest -UseBasicParsing -Uri ('https://raw.githubusercontent.com/sytone/windows-dev-setup/master/post-install.ps1?x={0}' -f (Get-Random)) -Headers @{"Pragma"="no-cache";"Cache-Control"="no-cache";}).Content)
 #>
 
 function Install-Font($url, $name, $family) {
@@ -22,7 +22,7 @@ function Install-Font($url, $name, $family) {
 Set-ExecutionPolicy -ExecutionPolicy Unrestricted
 
 $toolsPath = "c:\tools\"
-$version = "1.0.2"
+$version = "1.0.3"
 
 Write-Host "Version: $version"
 Read-Host "Press enter when ready to start"
@@ -62,6 +62,7 @@ if(Test-Path "$env:USERPROFILE\psf") {
     # Run in pwsh and powershell
     iex ((new-object net.webclient).DownloadString(('https://raw.github.com/sytone/PowerShellFrame/master/install.ps1?x={0}' -f (Get-Random))))
     . "$env:USERPROFILE\psf\localenv.ps1"
+    iex ((Invoke-WebRequest -UseBasicParsing -Uri ('https://raw.githubusercontent.com/sytone/windows-dev-setup/master/post-install.ps1?x={0}' -f (Get-Random)) -Headers @{"Pragma"="no-cache";"Cache-Control"="no-cache";}).Content)
 }
 
 Add-DirectoryToPath -Directory $toolsPath
