@@ -3,15 +3,19 @@ iex ((new-object net.webclient).DownloadString(('https://raw.githubusercontent.c
 #>
 
 function Install-Font($url, $name, $family) {
-    Write-Host "Installing font $name from $url"
-    New-Item "$($env:userprofile)\fontinstall" -ItemType Directory -Force | Out-Null
-    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-    Invoke-WebRequest -UseBasicParsing -Uri $url -OutFile "$($env:userprofile)\fontinstall\$name" -UseDefaultCredentials
-    $FONTS = 0x14
-    $objShell = New-Object -ComObject Shell.Application
-    $objFolder = $objShell.Namespace($FONTS)
-    $objFolder.CopyHere("$($env:userprofile)\fontinstall\$name")
-    remove-item "$($env:userprofile)\fontinstall" -Force -Recurse
+    if (Test-Path "c:\windows\fonts\$($name)") {
+        Write-Host "Font already installed"
+    } else {
+        Write-Host "Installing font $name from $url"
+        New-Item "$($env:userprofile)\fontinstall" -ItemType Directory -Force | Out-Null
+        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+        Invoke-WebRequest -UseBasicParsing -Uri $url -OutFile "$($env:userprofile)\fontinstall\$name" -UseDefaultCredentials
+        $FONTS = 0x14
+        $objShell = New-Object -ComObject Shell.Application
+        $objFolder = $objShell.Namespace($FONTS)
+        $objFolder.CopyHere("$($env:userprofile)\fontinstall\$name")
+        remove-item "$($env:userprofile)\fontinstall" -Force -Recurse
+    }
 }
   
 Set-ExecutionPolicy -ExecutionPolicy Unrestricted
