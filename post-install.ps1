@@ -1,3 +1,6 @@
+<#
+iex ((new-object net.webclient).DownloadString(('https://raw.githubusercontent.com/sytone/windows-dev-setup/master/post-install.ps1?x={0}' -f (Get-Random))))
+#>
 
 function Install-Font($url, $name, $family) {
     Write-Host "Installing font $name from $url"
