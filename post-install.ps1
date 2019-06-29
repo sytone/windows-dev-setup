@@ -22,7 +22,7 @@ function Install-Font($url, $name, $family) {
 Set-ExecutionPolicy -ExecutionPolicy Unrestricted
 
 $toolsPath = "c:\tools\"
-$version = "1.0.14"
+$version = "1.0.15"
 
 if((Test-Path "$toolsPath\$version.log")) {
     Write-Host "Current version ($version) already run, polling for update."
@@ -154,4 +154,10 @@ if(((Test-Path $ScriptsRoot) -and ($env:OneDriveConsumer))) {
   }
 }
 
+$installed = Get-AppxPackage | ? {$_.name -eq "Microsoft.WindowsTerminal"}
+if($installed) {
+    Write-Host "Windows Terminal is installed"
+} else {
+    start "ms-windows-store://pdp?productId=9N0DX20HK701&ocid=&cid=&referrer=github.com&scenario=click&webig=47ad3ce1-6e0d-4707-95dc-3291d58c9785&muid=1EB714941F9B6E61097319811E286FD9&websession=96429624c66e40449d9ed705ea3f738e&tduid="
+}
 
