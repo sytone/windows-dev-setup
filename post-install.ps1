@@ -19,9 +19,7 @@ function Install-Font($url, $name, $family) {
     }
 }
 
-function IsAdmin() {
-  return ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
-}
+$isAdmin = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 
 #if(IsAdmin) {
 #  Set-ExecutionPolicy -ExecutionPolicy Unrestricted
@@ -66,7 +64,7 @@ if(Test-Path "C:\Program Files (x86)\Microsoft\Edge Dev\Application") {
     Remove-Item "./MicrosoftEdgeSetup.exe" -Force -Recurse
 }
 
-if(-not IsAdmin) {
+if(-not $isAdmin) {
   if(Test-Path "C:\Program Files\Microsoft VS Code") {
       Write-Host "Visual Studio Code already installed"
   } else {
@@ -136,7 +134,7 @@ if(Test-Path "c:/tools/azshell.exe") {
     Copy-Item -Path "$($env:tmp)/azshell_windows_64-bit/azshell.exe" -Destination "c:/tools/azshell.exe" -Force
 }
 
-if(-not IsAdmin) {
+if(-not $isAdmin) {
   if(Test-Path "$env:USERPROFILE\psf") {
       Write-Host "PSF Installed" 
   } else {
@@ -171,9 +169,10 @@ if(-not IsAdmin) {
   }
 }
 
-$action = New-ScheduledTaskAction -Execute 'Powershell.exe' `
-  -Argument '-NoProfile -command "& {iex ((Invoke-WebRequest -UseBasicParsing -Uri ('https://raw.githubusercontent.com/sytone/windows-dev-setup/master/post-install.ps1?x={0}' -f (Get-Random)) -Headers @{'Pragma'='no-cache';'Cache-Control'='no-cache';}).Content)}"'
-$trigger = New-ScheduledTaskTrigger -Once -At (Get-Date).AddSeconds(5)
-Register-ScheduledTask -Action $action -Trigger $trigger -TaskName "UserSetup" -Description "Run install as normal user"
-
+if($isAdmin) {
+  $action = New-ScheduledTaskAction -Execute 'Powershell.exe' `
+    -Argument '-NoProfile -command "& {iex ((Invoke-WebRequest -UseBasicParsing -Uri ('https://raw.githubusercontent.com/sytone/windows-dev-setup/master/post-install.ps1?x={0}' -f (Get-Random)) -Headers @{'Pragma'='no-cache';'Cache-Control'='no-cache';}).Content)}"'
+  $trigger = New-ScheduledTaskTrigger -Once -At (Get-Date).AddSeconds(5)
+  Register-ScheduledTask -Action $action -Trigger $trigger -TaskName "UserSetup" -Description "Run install as normal user"
+}
 
