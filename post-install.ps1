@@ -26,7 +26,7 @@ $isAdmin = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIde
 #}
 
 $toolsPath = "c:\tools\"
-$version = "1.0.16"
+$version = "1.0.17"
 
 if((Test-Path "$toolsPath\$version.log")) {
     Write-Host "Current version ($version) already run, polling for update."
@@ -40,6 +40,7 @@ Write-Host "Version: $version"
 if((Test-Path $toolsPath)) {
     Write-Host "Tools folder already exists"
 } else {
+    Write-Host "Creating Tools folder"
     New-Item -Path $toolsPath -ItemType Directory -Force | Out-Null
 }
 
@@ -49,6 +50,7 @@ $installed = Get-ChildItem "HKLM:\Software\Microsoft\Windows\CurrentVersion\Unin
 if($installed.Contains("PowerShell 6-x64")) {
     Write-Host "PowerShell 6 already installed"
 } else {
+    Write-Host "PowerShell 6 is being installed"
     $latestPowerShellCore = (Invoke-WebRequest -UseBasicParsing -Uri https://api.github.com/repos/PowerShell/PowerShell/releases/latest).Content | ConvertFrom-Json
     $downloadUrl = ($latestPowerShellCore.assets | ? {$_.name.Contains("win-x64.msi")}).browser_download_url
     $downloadName = ($latestPowerShellCore.assets | ? {$_.name.Contains("win-x64.msi")}).name
@@ -59,6 +61,7 @@ if($installed.Contains("PowerShell 6-x64")) {
 if(Test-Path "C:\Program Files (x86)\Microsoft\Edge Dev\Application") {
     Write-Host "EdgeInsider already installed"
 } else {
+    Write-Host "EdgeInsider is being installed"
     Invoke-WebRequest -UseBasicParsing -Uri "https://c2rsetup.officeapps.live.com/c2r/downloadEdge.aspx?ProductreleaseID=Edge&platform=Default&version=Edge&Channel=Dev&language=en-us&Consent=1" -OutFile "./MicrosoftEdgeSetup.exe"
     Start-Process -FilePath ./MicrosoftEdgeSetup.exe -Wait
     Remove-Item "./MicrosoftEdgeSetup.exe" -Force -Recurse
@@ -68,6 +71,7 @@ if(-not $isAdmin) {
   if(Test-Path "C:\Program Files\Microsoft VS Code") {
       Write-Host "Visual Studio Code already installed"
   } else {
+      Write-Host "Visual Studio Code is being installed"
       $vscodeInf = @"
 [Setup]
 Lang=english
@@ -87,6 +91,7 @@ Tasks=addcontextmenufiles,addcontextmenufolders,associatewithfiles,addtopath
 if(Test-Path "C:\Program Files\Git") {
     Write-Host "GIT already installed"
 } else {
+    Write-Host "GIT is being installed"
     $gitInf = @"
 [Setup]
 Lang=default
@@ -129,6 +134,7 @@ Install-Font "https://github.com/tonsky/FiraCode/blob/master/distr/ttf/FiraCode-
 if(Test-Path "c:/tools/azshell.exe") {
     Write-Host "azshell Installed" 
 } else {
+    Write-Host "AZShell is being installed"
     Invoke-WebRequest -UseBasicParsing -Uri ((((Invoke-WebRequest -UseBasicParsing -Uri https://api.github.com/repos/yangl900/azshell/releases/latest).Content | ConvertFrom-Json).assets | ? {$_.name.Contains("windows")}).browser_download_url) -OutFile "$($env:tmp)/azshell_windows_64-bit.zip"
     Expand-Archive -Path "$($env:tmp)/azshell_windows_64-bit.zip" -DestinationPath "$($env:tmp)/azshell_windows_64-bit" -Force
     Copy-Item -Path "$($env:tmp)/azshell_windows_64-bit/azshell.exe" -Destination "c:/tools/azshell.exe" -Force
