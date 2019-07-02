@@ -177,7 +177,7 @@ if(-not $isAdmin) {
 
 if($isAdmin) {
   $action = New-ScheduledTaskAction -Execute 'Powershell.exe' `
-    -Argument '-NoProfile -command "& {iex ((Invoke-WebRequest -UseBasicParsing -Uri ('https://raw.githubusercontent.com/sytone/windows-dev-setup/master/post-install.ps1?x={0}' -f (Get-Random)) -Headers @{'Pragma'='no-cache';'Cache-Control'='no-cache';}).Content)}"'
+    -Argument '-NoProfile -command "& {iex ((Invoke-WebRequest -UseBasicParsing -Uri (`"https://raw.githubusercontent.com/sytone/windows-dev-setup/master/post-install.ps1?x={0}`" -f (Get-Random)) -Headers @{`"Pragma`"=`"no-cache`";`"Cache-Control`"=`"no-cache`";}).Content)}"'
   $trigger = New-ScheduledTaskTrigger -Once -At (Get-Date).AddSeconds(5)
   Register-ScheduledTask -Action $action -Trigger $trigger -TaskName "UserSetup" -Description "Run install as normal user"
 }
