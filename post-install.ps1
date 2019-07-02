@@ -117,8 +117,8 @@ EnableBuiltinInteractiveAdd=Disabled
     $latestGit = (Invoke-WebRequest -UseBasicParsing -Uri https://api.github.com/repos/git-for-windows/git/releases/latest).Content | ConvertFrom-Json
     $downloadUrl = ($latestGit.assets | ? {$_.name.Contains("64-bit.exe")}).browser_download_url
     $downloadName = ($latestGit.assets | ? {$_.name.Contains("64-bit.exe")}).name
-    Invoke-WebRequest -UseBasicParsing -Uri $downloadUrl -OutFile "./$downloadName"
-    Start-Process -FilePath "./$downloadName" -ArgumentList @('/SP-','/VERYSILENT','/SUPPRESSMSGBOXES','/FORCECLOSEAPPLICATIONS','/LOADINF="./gitinstall.inf"') -Wait
+    Invoke-WebRequest -Verbose -UseBasicParsing -Uri $downloadUrl -OutFile "./$downloadName"
+    Start-Process -Verbose -FilePath "./$downloadName" -ArgumentList @('/SP-','/VERYSILENT','/SUPPRESSMSGBOXES','/FORCECLOSEAPPLICATIONS','/LOADINF="./gitinstall.inf"') -Wait
     Remove-Item "./$downloadName" -Force -Recurse
     Remove-Item "./gitinstall.inf" -Force -Recurse
 }
@@ -177,7 +177,7 @@ if(-not $isAdmin) {
 
 if($isAdmin) {
   $action = New-ScheduledTaskAction -Execute 'Powershell.exe' `
-    -Argument '-NoProfile -command "& {iex ((Invoke-WebRequest -UseBasicParsing -Uri (`"https://raw.githubusercontent.com/sytone/windows-dev-setup/master/post-install.ps1?x={0}`" -f (Get-Random)) -Headers @{`"Pragma`"=`"no-cache`";`"Cache-Control`"=`"no-cache`";}).Content)}"'
+    -Argument '-NoProfile -NoExit -command "& {iex ((Invoke-WebRequest -UseBasicParsing -Uri (`"https://raw.githubusercontent.com/sytone/windows-dev-setup/master/post-install.ps1?x={0}`" -f (Get-Random)) -Headers @{`"Pragma`"=`"no-cache`";`"Cache-Control`"=`"no-cache`";}).Content)}"'
   $trigger = New-ScheduledTaskTrigger -Once -At (Get-Date).AddSeconds(5)
   Register-ScheduledTask -Action $action -Trigger $trigger -TaskName "UserSetup" -Description "Run install as normal user"
 }
