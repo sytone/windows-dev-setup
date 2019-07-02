@@ -26,7 +26,7 @@ $isAdmin = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIde
 #}
 
 $toolsPath = "c:\tools\"
-$version = "1.0.17"
+$version = "1.0.18"
 
 if((Test-Path "$toolsPath\$version.log")) {
     Write-Host "Current version ($version) already run, polling for update."
