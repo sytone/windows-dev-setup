@@ -26,7 +26,7 @@ $isAdmin = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIde
 #}
 
 $toolsPath = "c:\tools\"
-$version = "1.0.18"
+$version = "1.0.19"
 
 if((Test-Path "$toolsPath\$version.log")) {
     Write-Host "Current version ($version) already run, polling for update."
@@ -46,25 +46,29 @@ if((Test-Path $toolsPath)) {
 
 New-Item -Path "$toolsPath\$version.log" -Force | Out-Null
 
-$installed = Get-ChildItem "HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall" | foreach-object { $_.GetValue("DisplayName") }
-if($installed.Contains("PowerShell 6-x64")) {
-    Write-Host "PowerShell 6 already installed"
-} else {
-    Write-Host "PowerShell 6 is being installed"
-    $latestPowerShellCore = (Invoke-WebRequest -UseBasicParsing -Uri https://api.github.com/repos/PowerShell/PowerShell/releases/latest).Content | ConvertFrom-Json
-    $downloadUrl = ($latestPowerShellCore.assets | ? {$_.name.Contains("win-x64.msi")}).browser_download_url
-    $downloadName = ($latestPowerShellCore.assets | ? {$_.name.Contains("win-x64.msi")}).name
-    Invoke-WebRequest -UseBasicParsing -Uri $downloadUrl -OutFile "./$downloadName"
-    msiexec /i $downloadName /qb ADD_EXPLORER_CONTEXT_MENU_OPENPOWERSHELL=1 ENABLE_PSREMOTING=1 REGISTER_MANIFEST=1
+if($isAdmin) {
+    $installed = Get-ChildItem "HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall" | foreach-object { $_.GetValue("DisplayName") }
+    if($installed.Contains("PowerShell 6-x64")) {
+        Write-Host "PowerShell 6 already installed"
+    } else {
+        Write-Host "PowerShell 6 is being installed"
+        $latestPowerShellCore = (Invoke-WebRequest -UseBasicParsing -Uri https://api.github.com/repos/PowerShell/PowerShell/releases/latest).Content | ConvertFrom-Json
+        $downloadUrl = ($latestPowerShellCore.assets | ? {$_.name.Contains("win-x64.msi")}).browser_download_url
+        $downloadName = ($latestPowerShellCore.assets | ? {$_.name.Contains("win-x64.msi")}).name
+        Invoke-WebRequest -UseBasicParsing -Uri $downloadUrl -OutFile "./$downloadName"
+        msiexec /i $downloadName /qb ADD_EXPLORER_CONTEXT_MENU_OPENPOWERSHELL=1 ENABLE_PSREMOTING=1 REGISTER_MANIFEST=1
+    }
 }
 
-if(Test-Path "C:\Program Files (x86)\Microsoft\Edge Dev\Application") {
-    Write-Host "EdgeInsider already installed"
-} else {
-    Write-Host "EdgeInsider is being installed"
-    Invoke-WebRequest -UseBasicParsing -Uri "https://c2rsetup.officeapps.live.com/c2r/downloadEdge.aspx?ProductreleaseID=Edge&platform=Default&version=Edge&Channel=Dev&language=en-us&Consent=1" -OutFile "./MicrosoftEdgeSetup.exe"
-    Start-Process -FilePath ./MicrosoftEdgeSetup.exe -Wait
-    Remove-Item "./MicrosoftEdgeSetup.exe" -Force -Recurse
+if($isAdmin) {
+    if(Test-Path "C:\Program Files (x86)\Microsoft\Edge Dev\Application") {
+        Write-Host "EdgeInsider already installed"
+    } else {
+        Write-Host "EdgeInsider is being installed"
+        Invoke-WebRequest -UseBasicParsing -Uri "https://c2rsetup.officeapps.live.com/c2r/downloadEdge.aspx?ProductreleaseID=Edge&platform=Default&version=Edge&Channel=Dev&language=en-us&Consent=1" -OutFile "./MicrosoftEdgeSetup.exe"
+        Start-Process -FilePath ./MicrosoftEdgeSetup.exe -Wait
+        Remove-Item "./MicrosoftEdgeSetup.exe" -Force -Recurse
+    }
 }
 
 if(-not $isAdmin) {
@@ -88,11 +92,12 @@ Tasks=addcontextmenufiles,addcontextmenufolders,associatewithfiles,addtopath
   }
 }
 
-if(Test-Path "C:\Program Files\Git") {
-    Write-Host "GIT already installed"
-} else {
-    Write-Host "GIT is being installed"
-    $gitInf = @"
+if($isAdmin) {
+    if(Test-Path "C:\Program Files\Git") {
+        Write-Host "GIT already installed"
+    } else {
+        Write-Host "GIT is being installed"
+        $gitInf = @"
 [Setup]
 Lang=default
 Dir=C:\Program Files\Git
@@ -113,31 +118,37 @@ UseCredentialManager=Enabled
 EnableSymlinks=Disabled
 EnableBuiltinInteractiveAdd=Disabled
 "@
-    $gitInf | Set-Content "./gitinstall.inf"
-    $latestGit = (Invoke-WebRequest -UseBasicParsing -Uri https://api.github.com/repos/git-for-windows/git/releases/latest).Content | ConvertFrom-Json
-    $downloadUrl = ($latestGit.assets | ? {$_.name.Contains("64-bit.exe")}).browser_download_url
-    $downloadName = ($latestGit.assets | ? {$_.name.Contains("64-bit.exe")}).name
-    Invoke-WebRequest -Verbose -UseBasicParsing -Uri $downloadUrl -OutFile "./$downloadName"
-    Start-Process -Verbose -FilePath "./$downloadName" -ArgumentList @('/SP-','/VERYSILENT','/SUPPRESSMSGBOXES','/FORCECLOSEAPPLICATIONS','/LOADINF="./gitinstall.inf"') -Wait
-    Remove-Item "./$downloadName" -Force -Recurse
-    Remove-Item "./gitinstall.inf" -Force -Recurse
+        $gitInf | Set-Content "./gitinstall.inf"
+        $latestGit = (Invoke-WebRequest -UseBasicParsing -Uri https://api.github.com/repos/git-for-windows/git/releases/latest).Content | ConvertFrom-Json
+        $downloadUrl = ($latestGit.assets | ? {$_.name.Contains("64-bit.exe")}).browser_download_url
+        $downloadName = ($latestGit.assets | ? {$_.name.Contains("64-bit.exe")}).name
+        Invoke-WebRequest -Verbose -UseBasicParsing -Uri $downloadUrl -OutFile "./$downloadName"
+        if((Test-PAth "./$downloadName")) { Write-Host "Downloaded file exists" }
+        Start-Process -Verbose -FilePath "./$downloadName" -ArgumentList @('/SP-','/VERYSILENT','/SUPPRESSMSGBOXES','/FORCECLOSEAPPLICATIONS','/LOADINF="./gitinstall.inf"') -Wait
+        Remove-Item "./$downloadName" -Force -Recurse
+        Remove-Item "./gitinstall.inf" -Force -Recurse
+    }
 }
 
-Install-Font "https://github.com/adobe-fonts/source-code-pro/releases/download/variable-fonts/SourceCodeVariable-Italic.ttf" "SourceCodeVariable-Italic.ttf" "Source Code Variable"
-Install-Font "https://github.com/adobe-fonts/source-code-pro/releases/download/variable-fonts/SourceCodeVariable-Roman.ttf" "SourceCodeVariable-Roman.ttf" "Source Code Variable"
-Install-Font "https://github.com/tonsky/FiraCode/blob/master/distr/ttf/FiraCode-Bold.ttf?raw=true" "FiraCode-Bold.ttf" "Fira Code"
-Install-Font "https://github.com/tonsky/FiraCode/blob/master/distr/ttf/FiraCode-Light.ttf?raw=true" "FiraCode-Light.ttf" "Fira Code"
-Install-Font "https://github.com/tonsky/FiraCode/blob/master/distr/ttf/FiraCode-Medium.ttf?raw=true" "FiraCode-Medium.ttf" "Fira Code"
-Install-Font "https://github.com/tonsky/FiraCode/blob/master/distr/ttf/FiraCode-Regular.ttf?raw=true" "FiraCode-Regular.ttf" "Fira Code"
-Install-Font "https://github.com/tonsky/FiraCode/blob/master/distr/ttf/FiraCode-Retina.ttf?raw=true" "FiraCode-Retina.ttf" "Fira Code"
-    
-if(Test-Path "c:/tools/azshell.exe") {
-    Write-Host "azshell Installed" 
-} else {
-    Write-Host "AZShell is being installed"
-    Invoke-WebRequest -UseBasicParsing -Uri ((((Invoke-WebRequest -UseBasicParsing -Uri https://api.github.com/repos/yangl900/azshell/releases/latest).Content | ConvertFrom-Json).assets | ? {$_.name.Contains("windows")}).browser_download_url) -OutFile "$($env:tmp)/azshell_windows_64-bit.zip"
-    Expand-Archive -Path "$($env:tmp)/azshell_windows_64-bit.zip" -DestinationPath "$($env:tmp)/azshell_windows_64-bit" -Force
-    Copy-Item -Path "$($env:tmp)/azshell_windows_64-bit/azshell.exe" -Destination "c:/tools/azshell.exe" -Force
+if($isAdmin) {
+    Install-Font "https://github.com/adobe-fonts/source-code-pro/releases/download/variable-fonts/SourceCodeVariable-Italic.ttf" "SourceCodeVariable-Italic.ttf" "Source Code Variable"
+    Install-Font "https://github.com/adobe-fonts/source-code-pro/releases/download/variable-fonts/SourceCodeVariable-Roman.ttf" "SourceCodeVariable-Roman.ttf" "Source Code Variable"
+    Install-Font "https://github.com/tonsky/FiraCode/blob/master/distr/ttf/FiraCode-Bold.ttf?raw=true" "FiraCode-Bold.ttf" "Fira Code"
+    Install-Font "https://github.com/tonsky/FiraCode/blob/master/distr/ttf/FiraCode-Light.ttf?raw=true" "FiraCode-Light.ttf" "Fira Code"
+    Install-Font "https://github.com/tonsky/FiraCode/blob/master/distr/ttf/FiraCode-Medium.ttf?raw=true" "FiraCode-Medium.ttf" "Fira Code"
+    Install-Font "https://github.com/tonsky/FiraCode/blob/master/distr/ttf/FiraCode-Regular.ttf?raw=true" "FiraCode-Regular.ttf" "Fira Code"
+    Install-Font "https://github.com/tonsky/FiraCode/blob/master/distr/ttf/FiraCode-Retina.ttf?raw=true" "FiraCode-Retina.ttf" "Fira Code"
+}
+
+if(-not $isAdmin) {
+    if(Test-Path "c:/tools/azshell.exe") {
+        Write-Host "azshell Installed" 
+    } else {
+        Write-Host "AZShell is being installed"
+        Invoke-WebRequest -UseBasicParsing -Uri ((((Invoke-WebRequest -UseBasicParsing -Uri https://api.github.com/repos/yangl900/azshell/releases/latest).Content | ConvertFrom-Json).assets | ? {$_.name.Contains("windows")}).browser_download_url) -OutFile "$($env:tmp)/azshell_windows_64-bit.zip"
+        Expand-Archive -Path "$($env:tmp)/azshell_windows_64-bit.zip" -DestinationPath "$($env:tmp)/azshell_windows_64-bit" -Force
+        Copy-Item -Path "$($env:tmp)/azshell_windows_64-bit/azshell.exe" -Destination "c:/tools/azshell.exe" -Force
+    }
 }
 
 if(-not $isAdmin) {
