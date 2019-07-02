@@ -18,11 +18,17 @@ function Install-Font($url, $name, $family) {
         remove-item "$($env:userprofile)\fontinstall" -Force -Recurse
     }
 }
-  
-Set-ExecutionPolicy -ExecutionPolicy Unrestricted
+
+function IsAdmin() {
+  return ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+}
+
+#if(IsAdmin) {
+#  Set-ExecutionPolicy -ExecutionPolicy Unrestricted
+#}
 
 $toolsPath = "c:\tools\"
-$version = "1.0.15"
+$version = "1.0.16"
 
 if((Test-Path "$toolsPath\$version.log")) {
     Write-Host "Current version ($version) already run, polling for update."
@@ -60,10 +66,11 @@ if(Test-Path "C:\Program Files (x86)\Microsoft\Edge Dev\Application") {
     Remove-Item "./MicrosoftEdgeSetup.exe" -Force -Recurse
 }
 
-if(Test-Path "C:\Program Files\Microsoft VS Code") {
-    Write-Host "Visual Studio Code already installed"
-} else {
-    $vscodeInf = @"
+if(-not IsAdmin) {
+  if(Test-Path "C:\Program Files\Microsoft VS Code") {
+      Write-Host "Visual Studio Code already installed"
+  } else {
+      $vscodeInf = @"
 [Setup]
 Lang=english
 Dir=C:\Program Files\Microsoft VS Code
@@ -71,11 +78,12 @@ Group=Visual Studio Code
 NoIcons=0
 Tasks=addcontextmenufiles,addcontextmenufolders,associatewithfiles,addtopath
 "@
-    $vscodeInf | Set-Content "./vsinstall.inf"
-    Invoke-WebRequest -UseBasicParsing -Uri "https://update.code.visualstudio.com/latest/win32-x64/stable" -OutFile "./VSCodeSetup-x64.exe"
-    Start-Process -FilePath ./VSCodeSetup-x64.exe -ArgumentList @('/SP-','/VERYSILENT','/SUPPRESSMSGBOXES','/FORCECLOSEAPPLICATIONS','/LOADINF="./vsinstall.inf"') -Wait
-    Remove-Item "./VSCodeSetup-x64.exe" -Force -Recurse
-    Remove-Item "./vsinstall.inf" -Force -Recurse
+      $vscodeInf | Set-Content "./vsinstall.inf"
+      Invoke-WebRequest -UseBasicParsing -Uri "https://update.code.visualstudio.com/latest/win32-x64-user/stable" -OutFile "./VSCodeSetup-x64.exe"
+      Start-Process -FilePath ./VSCodeSetup-x64.exe -ArgumentList @('/SP-','/VERYSILENT','/SUPPRESSMSGBOXES','/FORCECLOSEAPPLICATIONS','/LOADINF="./vsinstall.inf"') -Wait
+      Remove-Item "./VSCodeSetup-x64.exe" -Force -Recurse
+      Remove-Item "./vsinstall.inf" -Force -Recurse
+  }
 }
 
 if(Test-Path "C:\Program Files\Git") {
@@ -128,36 +136,44 @@ if(Test-Path "c:/tools/azshell.exe") {
     Copy-Item -Path "$($env:tmp)/azshell_windows_64-bit/azshell.exe" -Destination "c:/tools/azshell.exe" -Force
 }
 
-if(Test-Path "$env:USERPROFILE\psf") {
-    Write-Host "PSF Installed" 
-} else {
-    # Run in pwsh and powershell
-    iex ((new-object net.webclient).DownloadString(('https://raw.github.com/sytone/PowerShellFrame/master/install.ps1?x={0}' -f (Get-Random))))
-    . "$env:USERPROFILE\psf\localenv.ps1"
-    iex ((Invoke-WebRequest -UseBasicParsing -Uri ('https://raw.githubusercontent.com/sytone/windows-dev-setup/master/post-install.ps1?x={0}' -f (Get-Random)) -Headers @{"Pragma"="no-cache";"Cache-Control"="no-cache";}).Content)
-}
-
-Add-DirectoryToPath -Directory $toolsPath
-
-$ScriptsRoot = (Join-Path $env:USERPROFILE "Scripts")
-if(((Test-Path $ScriptsRoot) -and ($env:OneDriveConsumer))) {
-  if((get-item -Path "$ScriptsRoot\AHK").LinkType -eq "SymbolicLink" -or (get-item -Path "$ScriptsRoot\powershell").LinkType -eq "SymbolicLink") {
-    Write-Host "Already Linked, skipping Symbolic Link creation to Onedrive for Consumer"
+if(-not IsAdmin) {
+  if(Test-Path "$env:USERPROFILE\psf") {
+      Write-Host "PSF Installed" 
   } else {
-    Write-Host "Making the powershell and AHK script locations a symbolic link to onedrive consumer"
-    Remove-Item -Path $ScriptsRoot -Recurse -Force
-    if(-not (Test-Path $ScriptsRoot)) {
-      New-Item $ScriptsRoot -ItemType Directory | Out-Null
+      # Run in pwsh and powershell
+      iex ((new-object net.webclient).DownloadString(('https://raw.github.com/sytone/PowerShellFrame/master/install.ps1?x={0}' -f (Get-Random))))
+      . "$env:USERPROFILE\psf\localenv.ps1"
+      iex ((Invoke-WebRequest -UseBasicParsing -Uri ('https://raw.githubusercontent.com/sytone/windows-dev-setup/master/post-install.ps1?x={0}' -f (Get-Random)) -Headers @{"Pragma"="no-cache";"Cache-Control"="no-cache";}).Content)
+  }
+  Add-DirectoryToPath -Directory $toolsPath
+
+
+  $ScriptsRoot = (Join-Path $env:USERPROFILE "Scripts")
+  if(((Test-Path $ScriptsRoot) -and ($env:OneDriveConsumer))) {
+    if((get-item -Path "$ScriptsRoot\AHK").LinkType -eq "SymbolicLink" -or (get-item -Path "$ScriptsRoot\powershell").LinkType -eq "SymbolicLink") {
+      Write-Host "Already Linked, skipping Symbolic Link creation to Onedrive for Consumer"
+    } else {
+      Write-Host "Making the powershell and AHK script locations a symbolic link to onedrive consumer"
+      Remove-Item -Path $ScriptsRoot -Recurse -Force
+      if(-not (Test-Path $ScriptsRoot)) {
+        New-Item $ScriptsRoot -ItemType Directory | Out-Null
+      }
+      New-Item -Path "$ScriptsRoot\powershell" -ItemType SymbolicLink -Value "$env:OneDriveConsumer\scripts\powershell"
+      New-Item -Path "$ScriptsRoot\AHK" -ItemType SymbolicLink -Value "$env:OneDriveConsumer\scripts\AHK"
     }
-    New-Item -Path "$ScriptsRoot\powershell" -ItemType SymbolicLink -Value "$env:OneDriveConsumer\scripts\powershell"
-    New-Item -Path "$ScriptsRoot\AHK" -ItemType SymbolicLink -Value "$env:OneDriveConsumer\scripts\AHK"
+  }
+ 
+  $installed = Get-AppxPackage | ? {$_.name -eq "Microsoft.WindowsTerminal"}
+  if($installed) {
+      Write-Host "Windows Terminal is installed"
+  } else {
+      start "ms-windows-store://pdp?productId=9N0DX20HK701&ocid=&cid=&referrer=github.com&scenario=click&webig=47ad3ce1-6e0d-4707-95dc-3291d58c9785&muid=1EB714941F9B6E61097319811E286FD9&websession=96429624c66e40449d9ed705ea3f738e&tduid="
   }
 }
 
-$installed = Get-AppxPackage | ? {$_.name -eq "Microsoft.WindowsTerminal"}
-if($installed) {
-    Write-Host "Windows Terminal is installed"
-} else {
-    start "ms-windows-store://pdp?productId=9N0DX20HK701&ocid=&cid=&referrer=github.com&scenario=click&webig=47ad3ce1-6e0d-4707-95dc-3291d58c9785&muid=1EB714941F9B6E61097319811E286FD9&websession=96429624c66e40449d9ed705ea3f738e&tduid="
-}
+$action = New-ScheduledTaskAction -Execute 'Powershell.exe' `
+  -Argument '-NoProfile -command "& {iex ((Invoke-WebRequest -UseBasicParsing -Uri ('https://raw.githubusercontent.com/sytone/windows-dev-setup/master/post-install.ps1?x={0}' -f (Get-Random)) -Headers @{'Pragma'='no-cache';'Cache-Control'='no-cache';}).Content)}"'
+$trigger = New-ScheduledTaskTrigger -Once -At (Get-Date).AddSeconds(5)
+Register-ScheduledTask -Action $action -Trigger $trigger -TaskName "UserSetup" -Description "Run install as normal user"
+
 
