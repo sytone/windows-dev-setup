@@ -11,9 +11,9 @@ $env:PSModulePath += ";$env:USERPROFILE\OneDrive - Microsoft\Documents\WindowsPo
 Install-Module MSTerminalSettings -Scope CurrentUser -Repository PSGallery -Force
 
 $terminalFolder = Find-MSTerminalFolder
-Copy-Item "C:\Program Files (x86)\Microsoft Visual Studio\2019\Preview\Common7\IDE\Assets\VisualStudio.150x150.contrast-standard_scale-100.png" -Destination "$terminalFolder\vs2019.png" -Force
-Copy-Item "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\Assets\VisualStudio.150x150.contrast-standard_scale-100.png" -Destination "$terminalFolder\vs2017.png" -Force
-Copy-Item "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\CommonExtensions\Microsoft\Overview\images\azure.png" -Destination "$terminalFolder\azure.png" -Force
+Invoke-WebRequest -UseBasicParsing -Uri https://raw.githubusercontent.com/sytone/windows-dev-setup/master/cloud.png -OutFile "$terminalFolder\azure.png"
+Invoke-WebRequest -UseBasicParsing -Uri https://raw.githubusercontent.com/sytone/windows-dev-setup/master/vs_2017_logo.png -OutFile "$terminalFolder\vs2017.png"
+Invoke-WebRequest -UseBasicParsing -Uri https://raw.githubusercontent.com/sytone/windows-dev-setup/master/vs_2019_logo.png -OutFile "$terminalFolder\vs2019.png"
 
 $vs2019 = @{
     Name              = "VS2019 Powershell"
