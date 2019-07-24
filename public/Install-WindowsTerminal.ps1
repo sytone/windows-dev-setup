@@ -1,7 +1,4 @@
-# iex ((Invoke-WebRequest -UseBasicParsing -Uri ('https://raw.githubusercontent.com/sytone/windows-dev-setup/master/public/Install-WindowsTerminal.ps1?x={0}' -f (Get-Random)) -Headers @{"Pragma"="no-cache";"Cache-Control"="no-cache";}).Content)
-
-
-
+# ((Invoke-WebRequest -UseBasicParsing -Uri ('https://raw.githubusercontent.com/sytone/windows-dev-setup/master/public/Install-WindowsTerminal.ps1?x={0}' -f (Get-Random)) -Headers @{"Pragma"="no-cache";"Cache-Control"="no-cache";}).Content | Set-Content "$env:temp/Install-WindowsTerminal.ps1"); & "$env:temp/Install-WindowsTerminal.ps1"
 Write-Host "Installing the Windows Terminal with profile updates..."
 $latestGit = (Invoke-WebRequest -UseBasicParsing -Uri https://api.github.com/repos/microsoft/terminal/releases).Content | ConvertFrom-Json
 $downloadUrl = ($latestGit[0].assets | Where-Object { $_.name.Contains("msixbundle") }).browser_download_url
