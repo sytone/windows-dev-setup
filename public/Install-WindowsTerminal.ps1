@@ -1,3 +1,6 @@
+# iex ((Invoke-WebRequest -UseBasicParsing -Uri ('https://raw.githubusercontent.com/sytone/windows-dev-setup/master/post-install.ps1?x={0}' -f (Get-Random)) -Headers @{"Pragma"="no-cache";"Cache-Control"="no-cache";}).Content)
+
+
 
 Write-Host "Installing the Windows Terminal with profile updates..."
 $latestGit = (Invoke-WebRequest -UseBasicParsing -Uri https://api.github.com/repos/microsoft/terminal/releases).Content | ConvertFrom-Json
