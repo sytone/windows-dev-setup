@@ -20,7 +20,7 @@ function Install-Font() {
     }
 }
 
-$installTemp = "$PSScriptRoot/installtemp"
+$installTemp = "$env:TMP/installtemp"
 if(-not (Test-Path $installTemp)) {
     New-Item -Type Directory -Path $installTemp -ErrorAction SilentlyContinue | Out-Null
     Invoke-WebRequest -UseBasicParsing -Uri "https://github.com/noseratio/choco/blob/master/wsudo/bin/wasudo.cmd?raw=true" -OutFile "$installTemp/wasudo.cmd"
