@@ -36,7 +36,7 @@ $env:Path += ";$installTemp"
 $isAdmin = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 $isUnrestricted = (Get-ExecutionPolicy) -eq "Unrestricted"
 $toolsPath = "c:\tools\"
-$version = "1.0.21"
+$version = "1.0.22"
 
 if(-not $isUnrestricted) {
     wsudox powershell -NoProfile -Command "& {Set-ExecutionPolicy -ExecutionPolicy Unrestricted}"
@@ -136,13 +136,7 @@ EnableBuiltinInteractiveAdd=Disabled
     Remove-Item "$PSScriptRoot/gitinstall.inf" -Force -Recurse
 }
 
-wsudo powershell -NoProfile -File Install-Font "https://github.com/adobe-fonts/source-code-pro/releases/download/variable-fonts/SourceCodeVariable-Italic.ttf" "SourceCodeVariable-Italic.ttf" "Source Code Variable"
-wsudo powershell -NoProfile -File Install-Font "https://github.com/adobe-fonts/source-code-pro/releases/download/variable-fonts/SourceCodeVariable-Roman.ttf" "SourceCodeVariable-Roman.ttf" "Source Code Variable"
-wsudo powershell -NoProfile -File Install-Font "https://github.com/tonsky/FiraCode/blob/master/distr/ttf/FiraCode-Bold.ttf?raw=true" "FiraCode-Bold.ttf" "Fira Code"
-wsudo powershell -NoProfile -File Install-Font "https://github.com/tonsky/FiraCode/blob/master/distr/ttf/FiraCode-Light.ttf?raw=true" "FiraCode-Light.ttf" "Fira Code"
-wsudo powershell -NoProfile -File Install-Font "https://github.com/tonsky/FiraCode/blob/master/distr/ttf/FiraCode-Medium.ttf?raw=true" "FiraCode-Medium.ttf" "Fira Code"
-wsudo powershell -NoProfile -File Install-Font "https://github.com/tonsky/FiraCode/blob/master/distr/ttf/FiraCode-Regular.ttf?raw=true" "FiraCode-Regular.ttf" "Fira Code"
-wsudo powershell -NoProfile -File Install-Font "https://github.com/tonsky/FiraCode/blob/master/distr/ttf/FiraCode-Retina.ttf?raw=true" "FiraCode-Retina.ttf" "Fira Code"
+wsudo powershell -NoProfile -Command "& {Install-Font.ps1 'https://github.com/adobe-fonts/source-code-pro/releases/download/variable-fonts/SourceCodeVariable-Italic.ttf' 'SourceCodeVariable-Italic.ttf' 'Source Code Variable'; Install-Font.ps1 'https://github.com/adobe-fonts/source-code-pro/releases/download/variable-fonts/SourceCodeVariable-Roman.ttf' 'SourceCodeVariable-Roman.ttf' 'Source Code Variable'; Install-Font.ps1 'https://github.com/tonsky/FiraCode/blob/master/distr/ttf/FiraCode-Bold.ttf?raw=true' 'FiraCode-Bold.ttf' 'Fira Code'; Install-Font.ps1 'https://github.com/tonsky/FiraCode/blob/master/distr/ttf/FiraCode-Light.ttf?raw=true' 'FiraCode-Light.ttf' 'Fira Code'; Install-Font.ps1 'https://github.com/tonsky/FiraCode/blob/master/distr/ttf/FiraCode-Medium.ttf?raw=true' 'FiraCode-Medium.ttf' 'Fira Code'; Install-Font.ps1 'https://github.com/tonsky/FiraCode/blob/master/distr/ttf/FiraCode-Regular.ttf?raw=true' 'FiraCode-Regular.ttf' 'Fira Code'; Install-Font.ps1 'https://github.com/tonsky/FiraCode/blob/master/distr/ttf/FiraCode-Retina.ttf?raw=true' 'FiraCode-Retina.ttf' 'Fira Code'; }"
 
 if(Test-Path "c:/tools/azshell.exe") {
     Write-Host "azshell Installed" 
