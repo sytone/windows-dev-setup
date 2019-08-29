@@ -36,7 +36,7 @@ $env:Path += ";$installTemp"
 $isAdmin = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 $isUnrestricted = (Get-ExecutionPolicy) -eq "Unrestricted"
 $toolsPath = "c:\tools\"
-$version = "1.0.22"
+$version = "1.0.23"
 
 if(-not $isUnrestricted) {
     wsudox powershell -NoProfile -Command "& {Set-ExecutionPolicy -ExecutionPolicy Unrestricted}"
