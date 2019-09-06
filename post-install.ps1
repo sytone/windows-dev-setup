@@ -36,7 +36,7 @@ $env:Path += ";$installTemp"
 $isAdmin = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 $isUnrestricted = (Get-ExecutionPolicy) -eq "Unrestricted"
 $toolsPath = "c:\tools\"
-$version = "1.0.25"
+$version = "1.0.26"
 
 if(-not $isUnrestricted) {
     wsudox powershell -NoProfile -Command "& {Set-ExecutionPolicy -ExecutionPolicy Unrestricted}"
@@ -95,7 +95,7 @@ Tasks=addcontextmenufiles,addcontextmenufolders,associatewithfiles,addtopath
 "@
     $vscodeInf | Set-Content "./vsinstall.inf"
     Invoke-WebRequest -UseBasicParsing -Uri "https://update.code.visualstudio.com/latest/win32-x64-user/stable" -OutFile "./VSCodeSetup-x64.exe"
-    Start-Process -FilePath ./VSCodeSetup-x64.exe -ArgumentList @('/SP-','/VERYSILENT','/SUPPRESSMSGBOXES','/FORCECLOSEAPPLICATIONS','/LOADINF="./vsinstall.inf"') -Wait
+    wsudox ./VSCodeSetup-x64.exe /SP- /VERYSILENT /SUPPRESSMSGBOXES /FORCECLOSEAPPLICATIONS /LOADINF=./vsinstall.inf
     Remove-Item "./VSCodeSetup-x64.exe" -Force -Recurse
     Remove-Item "./vsinstall.inf" -Force -Recurse
 }
@@ -131,12 +131,12 @@ EnableBuiltinInteractiveAdd=Disabled
     $downloadName = ($latestGit.assets | ? {$_.name.Contains("64-bit.exe")}).name
     Invoke-WebRequest -Verbose -UseBasicParsing -Uri $downloadUrl -OutFile "$($env:tmp)/$downloadName"
     if((Test-PAth "$($env:tmp)/$downloadName")) { Write-Host "Downloaded file exists" }
-    wsudo "$($env:tmp)/$downloadName /SP- /VERYSILENT /SUPPRESSMSGBOXES /FORCECLOSEAPPLICATIONS /LOADINF=$($env:tmp)/gitinstall.inf"
+    wsudo $($env:tmp)/$downloadName /SP- /VERYSILENT /SUPPRESSMSGBOXES /FORCECLOSEAPPLICATIONS /LOADINF=$($env:tmp)/gitinstall.inf
     Remove-Item "$($env:tmp)/$downloadName" -Force -Recurse
     Remove-Item "$($env:tmp)/gitinstall.inf" -Force -Recurse
 }
 
-wsudo powershell -NoProfile -Command "& {Install-Font.ps1 'https://github.com/adobe-fonts/source-code-pro/releases/download/variable-fonts/SourceCodeVariable-Italic.ttf' 'SourceCodeVariable-Italic.ttf' 'Source Code Variable'; Install-Font.ps1 'https://github.com/adobe-fonts/source-code-pro/releases/download/variable-fonts/SourceCodeVariable-Roman.ttf' 'SourceCodeVariable-Roman.ttf' 'Source Code Variable'; Install-Font.ps1 'https://github.com/tonsky/FiraCode/blob/master/distr/ttf/FiraCode-Bold.ttf?raw=true' 'FiraCode-Bold.ttf' 'Fira Code'; Install-Font.ps1 'https://github.com/tonsky/FiraCode/blob/master/distr/ttf/FiraCode-Light.ttf?raw=true' 'FiraCode-Light.ttf' 'Fira Code'; Install-Font.ps1 'https://github.com/tonsky/FiraCode/blob/master/distr/ttf/FiraCode-Medium.ttf?raw=true' 'FiraCode-Medium.ttf' 'Fira Code'; Install-Font.ps1 'https://github.com/tonsky/FiraCode/blob/master/distr/ttf/FiraCode-Regular.ttf?raw=true' 'FiraCode-Regular.ttf' 'Fira Code'; Install-Font.ps1 'https://github.com/tonsky/FiraCode/blob/master/distr/ttf/FiraCode-Retina.ttf?raw=true' 'FiraCode-Retina.ttf' 'Fira Code'; }"
+wsudo powershell -NoProfile -Command "& {$installTemp/Install-Font.ps1 'https://github.com/adobe-fonts/source-code-pro/releases/download/variable-fonts/SourceCodeVariable-Italic.ttf' 'SourceCodeVariable-Italic.ttf' 'Source Code Variable'; $installTemp/Install-Font.ps1 'https://github.com/adobe-fonts/source-code-pro/releases/download/variable-fonts/SourceCodeVariable-Roman.ttf' 'SourceCodeVariable-Roman.ttf' 'Source Code Variable'; $installTemp/Install-Font.ps1 'https://github.com/tonsky/FiraCode/blob/master/distr/ttf/FiraCode-Bold.ttf?raw=true' 'FiraCode-Bold.ttf' 'Fira Code'; $installTemp/Install-Font.ps1 'https://github.com/tonsky/FiraCode/blob/master/distr/ttf/FiraCode-Light.ttf?raw=true' 'FiraCode-Light.ttf' 'Fira Code'; $installTemp/Install-Font.ps1 'https://github.com/tonsky/FiraCode/blob/master/distr/ttf/FiraCode-Medium.ttf?raw=true' 'FiraCode-Medium.ttf' 'Fira Code'; $installTemp/Install-Font.ps1 'https://github.com/tonsky/FiraCode/blob/master/distr/ttf/FiraCode-Regular.ttf?raw=true' 'FiraCode-Regular.ttf' 'Fira Code'; $installTemp/Install-Font.ps1 'https://github.com/tonsky/FiraCode/blob/master/distr/ttf/FiraCode-Retina.ttf?raw=true' 'FiraCode-Retina.ttf' 'Fira Code'; }"
 
 if(Test-Path "c:/tools/azshell.exe") {
     Write-Host "azshell Installed" 
