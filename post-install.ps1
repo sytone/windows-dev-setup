@@ -36,7 +36,7 @@ $env:Path += ";$installTemp"
 $isAdmin = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 $isUnrestricted = (Get-ExecutionPolicy) -eq "Unrestricted"
 $toolsPath = "c:\tools\"
-$version = "1.0.26"
+$version = "1.0.27"
 
 if(-not $isUnrestricted) {
     wsudox powershell -NoProfile -Command "& {Set-ExecutionPolicy -ExecutionPolicy Unrestricted}"
@@ -153,7 +153,6 @@ if(Test-Path "$env:USERPROFILE\psf") {
   # Run in pwsh and powershell
   iex ((new-object net.webclient).DownloadString(('https://raw.github.com/sytone/PowerShellFrame/master/install.ps1?x={0}' -f (Get-Random))))
   . "$env:USERPROFILE\psf\localenv.ps1"
-  iex ((Invoke-WebRequest -UseBasicParsing -Uri ('https://raw.githubusercontent.com/sytone/windows-dev-setup/master/post-install.ps1?x={0}' -f (Get-Random)) -Headers @{"Pragma"="no-cache";"Cache-Control"="no-cache";}).Content)
 }
 Add-DirectoryToPath -Directory $toolsPath
 
@@ -178,15 +177,5 @@ if($installed) {
   Write-Host "Windows Terminal is installed"
 } else {
   start "ms-windows-store://pdp?productId=9N0DX20HK701&ocid=&cid=&referrer=github.com&scenario=click&webig=47ad3ce1-6e0d-4707-95dc-3291d58c9785&muid=1EB714941F9B6E61097319811E286FD9&websession=96429624c66e40449d9ed705ea3f738e&tduid="
-}
-
-if($isAdmin) {
-  if((Get-ScheduledTask -TaskName "UserSetup")) {
-    Unregister-ScheduledTask -TaskName "UserSetup" -Confirm:$false
-  }
-  $action = New-ScheduledTaskAction -Execute 'Powershell.exe' `
-    -Argument '-NoProfile -NoExit -command "& {iex ((Invoke-WebRequest -UseBasicParsing -Uri (""https://raw.githubusercontent.com/sytone/windows-dev-setup/master/post-install.ps1?x={0}"" -f (Get-Random)) -Headers @{""Pragma""=""no-cache"";""Cache-Control""=""no-cache"";}).Content)}"'
-  $trigger = New-ScheduledTaskTrigger -Once -At (Get-Date).AddSeconds(5)
-  Register-ScheduledTask -Action $action -Trigger $trigger -TaskName "UserSetup" -Description "Run install as normal user"
 }
 
