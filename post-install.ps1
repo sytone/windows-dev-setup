@@ -125,15 +125,15 @@ UseCredentialManager=Enabled
 EnableSymlinks=Disabled
 EnableBuiltinInteractiveAdd=Disabled
 "@
-    $gitInf | Set-Content "./gitinstall.inf"
+    $gitInf | Set-Content "$($env:tmp)/gitinstall.inf"
     $latestGit = (Invoke-WebRequest -UseBasicParsing -Uri https://api.github.com/repos/git-for-windows/git/releases/latest).Content | ConvertFrom-Json
     $downloadUrl = ($latestGit.assets | ? {$_.name.Contains("64-bit.exe")}).browser_download_url
     $downloadName = ($latestGit.assets | ? {$_.name.Contains("64-bit.exe")}).name
-    Invoke-WebRequest -Verbose -UseBasicParsing -Uri $downloadUrl -OutFile "./$downloadName"
-    if((Test-PAth "./$downloadName")) { Write-Host "Downloaded file exists" }
-    wsudo "./$downloadName /SP- /VERYSILENT /SUPPRESSMSGBOXES /FORCECLOSEAPPLICATIONS /LOADINF=./gitinstall.inf"
-    Remove-Item "./$downloadName" -Force -Recurse
-    Remove-Item "./gitinstall.inf" -Force -Recurse
+    Invoke-WebRequest -Verbose -UseBasicParsing -Uri $downloadUrl -OutFile "$($env:tmp)/$downloadName"
+    if((Test-PAth "$($env:tmp)/$downloadName")) { Write-Host "Downloaded file exists" }
+    wsudo "$($env:tmp)/$downloadName /SP- /VERYSILENT /SUPPRESSMSGBOXES /FORCECLOSEAPPLICATIONS /LOADINF=$($env:tmp)/gitinstall.inf"
+    Remove-Item "$($env:tmp)/$downloadName" -Force -Recurse
+    Remove-Item "$($env:tmp)/gitinstall.inf" -Force -Recurse
 }
 
 wsudo powershell -NoProfile -Command "& {Install-Font.ps1 'https://github.com/adobe-fonts/source-code-pro/releases/download/variable-fonts/SourceCodeVariable-Italic.ttf' 'SourceCodeVariable-Italic.ttf' 'Source Code Variable'; Install-Font.ps1 'https://github.com/adobe-fonts/source-code-pro/releases/download/variable-fonts/SourceCodeVariable-Roman.ttf' 'SourceCodeVariable-Roman.ttf' 'Source Code Variable'; Install-Font.ps1 'https://github.com/tonsky/FiraCode/blob/master/distr/ttf/FiraCode-Bold.ttf?raw=true' 'FiraCode-Bold.ttf' 'Fira Code'; Install-Font.ps1 'https://github.com/tonsky/FiraCode/blob/master/distr/ttf/FiraCode-Light.ttf?raw=true' 'FiraCode-Light.ttf' 'Fira Code'; Install-Font.ps1 'https://github.com/tonsky/FiraCode/blob/master/distr/ttf/FiraCode-Medium.ttf?raw=true' 'FiraCode-Medium.ttf' 'Fira Code'; Install-Font.ps1 'https://github.com/tonsky/FiraCode/blob/master/distr/ttf/FiraCode-Regular.ttf?raw=true' 'FiraCode-Regular.ttf' 'Fira Code'; Install-Font.ps1 'https://github.com/tonsky/FiraCode/blob/master/distr/ttf/FiraCode-Retina.ttf?raw=true' 'FiraCode-Retina.ttf' 'Fira Code'; }"
