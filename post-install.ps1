@@ -68,17 +68,17 @@ if($installed.Contains("PowerShell 6-x64")) {
     $latestPowerShellCore = (Invoke-WebRequest -UseBasicParsing -Uri https://api.github.com/repos/PowerShell/PowerShell/releases/latest).Content | ConvertFrom-Json
     $downloadUrl = ($latestPowerShellCore.assets | ? {$_.name.Contains("win-x64.msi")}).browser_download_url
     $downloadName = ($latestPowerShellCore.assets | ? {$_.name.Contains("win-x64.msi")}).name
-    Invoke-WebRequest -UseBasicParsing -Uri $downloadUrl -OutFile "./$downloadName"
-    wsudox msiexec /i $downloadName /qb ADD_EXPLORER_CONTEXT_MENU_OPENPOWERSHELL=1 ENABLE_PSREMOTING=1 REGISTER_MANIFEST=1
+    Invoke-WebRequest -UseBasicParsing -Uri $downloadUrl -OutFile "c:\tools\$downloadName"
+    wsudo msiexec /i c:\tools\$downloadName /qb ADD_EXPLORER_CONTEXT_MENU_OPENPOWERSHELL=1 ENABLE_PSREMOTING=1 REGISTER_MANIFEST=1
 }
 
 if(Test-Path "C:\Program Files (x86)\Microsoft\Edge Dev\Application") {
     Write-Host "EdgeInsider already installed"
 } else {
     Write-Host "EdgeInsider is being installed"
-    Invoke-WebRequest -UseBasicParsing -Uri "https://c2rsetup.officeapps.live.com/c2r/downloadEdge.aspx?ProductreleaseID=Edge&platform=Default&version=Edge&Channel=Dev&language=en-us&Consent=1" -OutFile "./MicrosoftEdgeSetup.exe"
-    wsudox ./MicrosoftEdgeSetup.exe
-    Remove-Item "./MicrosoftEdgeSetup.exe" -Force -Recurse
+    Invoke-WebRequest -UseBasicParsing -Uri "https://c2rsetup.officeapps.live.com/c2r/downloadEdge.aspx?ProductreleaseID=Edge&platform=Default&version=Edge&Channel=Dev&language=en-us&Consent=1" -OutFile "c:\tools\MicrosoftEdgeSetup.exe"
+    wsudo c:\tools\MicrosoftEdgeSetup.exe
+    Remove-Item "c:\tools\MicrosoftEdgeSetup.exe" -Force -Recurse
 }
 
 if(Test-Path "C:\Program Files\Microsoft VS Code") {
@@ -93,11 +93,11 @@ Group=Visual Studio Code
 NoIcons=0
 Tasks=addcontextmenufiles,addcontextmenufolders,associatewithfiles,addtopath
 "@
-    $vscodeInf | Set-Content "./vsinstall.inf"
-    Invoke-WebRequest -UseBasicParsing -Uri "https://update.code.visualstudio.com/latest/win32-x64-user/stable" -OutFile "./VSCodeSetup-x64.exe"
-    wsudox ./VSCodeSetup-x64.exe /SP- /VERYSILENT /SUPPRESSMSGBOXES /FORCECLOSEAPPLICATIONS /LOADINF=./vsinstall.inf
-    Remove-Item "./VSCodeSetup-x64.exe" -Force -Recurse
-    Remove-Item "./vsinstall.inf" -Force -Recurse
+    $vscodeInf | Set-Content "c:\tools\vsinstall.inf"
+    Invoke-WebRequest -UseBasicParsing -Uri "https://update.code.visualstudio.com/latest/win32-x64-user/stable" -OutFile "c:\tools\VSCodeSetup-x64.exe"
+    wsudox c:\tools\VSCodeSetup-x64.exe /SP- /VERYSILENT /SUPPRESSMSGBOXES /FORCECLOSEAPPLICATIONS /LOADINF=./vsinstall.inf
+    Remove-Item "c:\tools\VSCodeSetup-x64.exe" -Force -Recurse
+    Remove-Item "c:\tools\vsinstall.inf" -Force -Recurse
 }
 
 if(Test-Path "C:\Program Files\Git") {
